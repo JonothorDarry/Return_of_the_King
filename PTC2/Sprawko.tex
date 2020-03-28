@@ -8,6 +8,13 @@
             footskip=.25in]{geometry}
 \pagenumbering{gobble}
 \usepackage[colorlinks=true, linkcolor=Black, urlcolor=Blue]{hyperref}
+\usepackage[polish]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage{graphicx}
+\usepackage{subcaption}
+\usepackage{listings}
+\usepackage{color}
+\usepackage[svgnames]{xcolor}
 
 \begin{document}
 \title{Sprawozdanie z zadania na Przetwarzanie Równoległe\\
@@ -44,27 +51,49 @@
 		./pi6.c &  2 &  6.310614 &  12.557454 &  1.76003602 &  3.141592653590 \\ \hline
 		./pi6.c &  4 &  4.567762 &  15.864548 &  2.43158640 &  3.141592653590 \\ \hline
 		./pi6.c &  8 &  3.467091 &  25.773811 &  3.20352364 &  3.141592653590 \\ \hline
-		
 	\end{tabular}
 	
 \end{flushleft}
+\begin{enumerate}
+	\item Kod pi2.c różni się od kodu sekwencyjnego dodaniem dyrektywy 
+	\begin{lstlisting}[language=C]
+		#pragma omp paralel for
+	\end{lstlisting}
+	dla pętli obliczającej pi. Zarówno x jak i sum są współdzielone przez wątki; błędny wynik wynika z wyścigu w dostępie do danych (który zachodzi np. jeśli jeden wątek zmieni wartość x-a w momencie w którym 2. wątek dodaję wartość zależną od x-a do sumy - jeśli 1. zapisze dane przed 2. wątkiem, ten 2. będzie korzystał z niepoprawnych danych), który zachodzi, ponieważ nie ma sychronizacji w dostępie do zmiennych współdzielonych. Sumaryczne czasy użycia procesorów są wyższe niż dla kodu sekwencyjnego, ponieważ nie zachodzi czasowa lokalność odwołań - dane muszą być zmieniane w pamięci po każdej zmianie sumy, ponadto jeśli x został zmieniony pomiędzy zapisem x-a a dodaniem zmianą sumy przez wątek, też zostanie zmieniony.
+	\\
+	\\
+	
+	
+	\item Kod pi3.c ma lokalną dla wątku zmienną $x$ i zapis do sumy następuje z użyciem dyrektywy:
+	\begin{lstlisting}[language=C]
+		#pragma omp atomic
+	\end{lstlisting}
+	Co za tym idzie, zmienna współdzielona $sum$ jest uaktualniana przez dokładnie 1 wątek i nie zachodzi wyścig w dostępie do danych. Kod nie jest efektywny, ponieważ wykonuje $10^{9}$ razy operację założenia i zdjęcia zamka(blokady) na współdzielonej zmiennej $sum$.
+	
+	\item Kod pi4.c różni się od pi3.c tym, że każdy wątek zapisuje i odczytuje lokalną dla wątku zmienną, po zakończeniu obliczeń wchodzi do sekcji krytycznej (do której jednoczesny dostęp ma tylko 1 wątek) i zmienia wartość sumy; nie zachodzi wyścig, ponieważ zmienne $x$ i $s2$ (suma dla pojedynczego wątku) są lokalne dla wątku, a zmienna $sum$ jest aktualizowana przez co najwyżej jeden wątek, ponieważ znajduje się w sekcji krytycznej. Lokalne zmienne $x$ i $s2$ znajdują się w pamięci procesorów, które na nich operują i nie są zmieniane i odczytywane przez inne wątki, co implikuje czasowa lokalność odwołań i efektywność: Sumaryczny czas użycia procesorów jest prawie taaki sam jak kodu sekwencyjnego, użycie większej liczby procesorów prowadzi do przyspieszenia rzeczywistego wykonania kodu.
+	
+	\item Kod pi5.c jest podobny do kodu pi4.c, ale zamiast lokalnych zmiennych sumy jest tam:
+	\begin{lstlisting}[language=C]
+	#pragma omp parallel for private(x) reduction(+:sum)
+	\end{lstlisting}
+	co działa nieomal dokładnie w ten sam sposób co pi4.c, ponieważ dyrektywa tworzy zmienną lokalną dla wątku, która jest aktualizowana zamiast współdzielonej $sum$ w pętli i dodawana do zmienne globalnej dla wątków dopiero po zakończeniu działania w pętli przez wątek. Co za tym idzie, czasowo ten algorytm funkcjonuje prawie tak samo jak pi4.c.
+	
+	\item Kod pi6.c różni się od pi4.c tym, że zamiast pojedynczych zmiennych lokalnych do sumowania została użyta tablica typu double[] taka, że każdy wątek aktualizuje tylko 1 indeks - co za tym idzie, zachodzi zjawisko false sharingu - zapisy do tablicy w 1 wątku powodują konieczność zmiany całej linii pamięci w innych pamięciach procesorów, ponieważ te mają w swoich liniach pamięci własne kopie kolejnych wartości tej tablicy. Zmniejsza to efektywność kodu, sumaryczny czas użycia procesorów rośnie wraz ze zwiększeniem liczby wątków - a co za tym idzie, zwiększeniem liczby pobieranych linii do pamięci podręcznych.
+	
+\end{enumerate}
 	 
-\section{Struktura klienta}
+\section{Długość linii}
+Kod pi7.c wypisywał najniższe wartości czasu (niecałe 5.6 s) dla 2 wątków w iteracjach $k$ takich, że\\ 
+\begin{center}
+	$k\equiv7\ \textrm{mod}\ 8$
+\end{center}
+Przy czym w $k$-tej iteracji używałem wartości tablicy o indeksach $k$ i $k+1$, a iteracje indeksowałem od 0: co za tym idzie, długość linii pamięci procesora, którego używałem to 8 bajtów.
+
+\section{Wyjaśnienie, trudności}
 \begin{enumerate}
-	\item 
+	\item W 0. iteracji korzystam z indeksów (0, 1) tablicy double[]; w 1. z indeksów (1, 2), ... w 7. z indeksów (7, 8) itd.. W 25 pierwszych iteracjach najlepsze wyniki uzyskuje w 7., 15. i 23. iteracji. Można to logicznie uzasadnić, jeśli linia pamięci procesora ma 8 bajtów: w 0., 1., ... 6. iteracji 2 procesory nadpisują wzajemnie własne linie pamięci, bo pobierają za każdym razem kolejne 8 doubli z tablicy double[] (0...7). W 7. iteracji 1. procesor używa ma w swojej linii pamięci elementy tablicy double[] o indeksach 0...7, 2. procesor ma w swojej linii pamięci elementy tablicy double[] o indeksach 8...15. 2 procesory nie nadpisują swoich linii pamięci, co przyspiesza działanie programu. Analogicznie, w 15. iteracji 1. procesor ma w swojej linii pamięci elementy tablicy double[] o indeksach 8...15, 2. procesor - indeksy 16...23. To zjawisko powtarza się cyklicznie co 8 bajtów. Nie widzę inndego sensownego uzasadnienia, dlaczego właśnie 7., 15. i 23. iteracja dawały najlepsze rezultaty, dlatego przyjmuje powyższe rozumowanie za co najmniej zasadne.
+	\item Jedyną trudnością były zdarzające się iteracje, w których procesor delikatnie zwalniał, zapewne w wyniku procesów w tle, po wyeliminowaniu których otrzymałem powyższe rezultaty. Różnice pomiędzy kolejnymi 7., 15. i 23. iteracją były rzędu 0.2-0.4 sekundy, dlatego zasadnym było albo wydłużenie pętli, albo wyeliminowanie zbędnych procesów.
 \end{enumerate}
 
-\section{Struktura node'a}
-\begin{enumerate}
-	\item 
-\end{enumerate}
-
-\section{Uruchomienie}
-\begin{enumerate}
-	\item Uruchomienie serwera:\\
-		cd ...(miejsce, gdzie zaszyty jest projekt)\\
-		
-		
-\end{enumerate}
 
 \end{document}
