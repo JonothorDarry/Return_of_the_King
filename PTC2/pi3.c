@@ -16,18 +16,18 @@ int main(int argc, char* argv[])
 	}
 
 	clock_t start, stop;
-	double pi, sum=0.0, real_stop, real_start;
+	double x, pi, sum=0.0, real_stop, real_start;
 	step = 1./(double)num_steps;
 	start = clock();
 	real_start=omp_get_wtime();
 	
 	int i=0;
-#pragma omp parallel for
+#pragma omp parallel for private(x)
 	for (i=0; i<num_steps; i++)
 	{
-		double x = (i + .5)*step;
+		x = (i + .5)*step;
 #pragma omp atomic
-		sum = sum + 4.0/(1.+ x*x);
+		sum += 4.0/(1.+ x*x);
 	}
 	
 	//pi= sum/numb_of_steps

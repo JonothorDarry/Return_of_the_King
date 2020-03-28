@@ -29,8 +29,8 @@ int main(int argc, char* argv[])
 		x = (i + .5)*step;
 		s2=s2+ 4.0/(1.+ x*x);
 	}
-#pragma omp critical
-	{sum+=s2;}
+#pragma omp atomic
+	sum+=s2;
 	}
 	
 	//pi= sum/numb_of_steps

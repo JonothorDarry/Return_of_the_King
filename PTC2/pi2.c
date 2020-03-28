@@ -4,7 +4,7 @@
 #include <time.h>
 #include <omp.h>
 
-long long num_steps = 1000000000;
+const long long num_steps = 1000000000;
 double step;
 
 int main(int argc, char* argv[])
@@ -26,11 +26,11 @@ int main(int argc, char* argv[])
 	for (i=0; i<num_steps; i++)
 	{
 		x = (i + .5)*step;
-		sum = sum + 4.0/(1.+ x*x);
+		sum += 4.0/(1.+ x*x);
 	}
 	
 	//pi= sum/numb_of_steps
-	pi += sum*step;
+	pi = sum*step;
 	stop = clock();
 	real_stop=omp_get_wtime();
 
