@@ -24,16 +24,30 @@
 \end {enumerate}
 
 \section{Tablica wynków: kody od Pi2 do Pi6 w 3 wersjach}
-\begin{center}
-	\begin{tabular}{| l | l | l | l |}
+\begin{flushleft}
+	\begin{tabular}{| l | l | l | l | l | l |}
 		\hline
-		Wersja kodu & Czas trwania obliczeń & Czas użycia procesorów & Przyspieszenie \\ \hline
-		Monday & 11C & 22C & 5 \\ \hline
-		Tuesday & 9C & 19C & 4 \\ \hline
-		Wednesday & 10C & 21C & 3 \\
-		\hline
+		Kod & Wątki & Rzeczywisty czas obliczeń & Czas użycia procesorów & Przysp. & Pi \\ \hline
+		./pi\_s.c &  1 &  11.106908 &  11.106908 &  - &  3.141592653590 \\ \hline
+		./pi2.c &  2 &  9.854029 &  19.660201 &  1.12714383 &  1.629332922363 \\ \hline
+		./pi2.c &  4 &  6.201361 &  22.991912 &  1.79104361 &  0.606812628416 \\ \hline
+		./pi2.c &  8 &  4.855977 &  37.927782 &  2.28726536 &  0.407415018512 \\ \hline
+		./pi3.c &  2 &  32.231695 &  61.883320 &  .344595839 &  3.141592653590 \\ \hline
+		./pi3.c &  4 &  68.859282 &  269.248873 &  .161298632 &  3.141592653590 \\ \hline
+		./pi3.c &  8 &  102.148402 &  721.992069 &  .108733056 &  3.141592653590 \\ \hline
+		./pi4.c &  2 &  5.644930 &  11.230873 &  1.96759003 &  3.141592653590 \\ \hline
+		./pi4.c &  4 &  2.862752 &  11.442671 &  3.87980097 &  3.141592653590 \\ \hline
+		./pi4.c &  8 &  1.489600 &  11.794959 &  7.45630236 &  3.141592653590 \\ \hline
+		./pi5.c &  2 &  5.616025 &  11.189766 &  1.97771697 &  3.141592653590 \\ \hline
+		./pi5.c &  4 &  2.865750 &  11.450181 &  3.87574212 &  3.141592653590 \\ \hline
+		./pi5.c &  8 &  1.493857 &  11.804175 &  7.43505435 &  3.141592653590 \\ \hline
+		./pi6.c &  2 &  6.310614 &  12.557454 &  1.76003602 &  3.141592653590 \\ \hline
+		./pi6.c &  4 &  4.567762 &  15.864548 &  2.43158640 &  3.141592653590 \\ \hline
+		./pi6.c &  8 &  3.467091 &  25.773811 &  3.20352364 &  3.141592653590 \\ \hline
+		
 	\end{tabular}
-\end{center}
+	
+\end{flushleft}
 	 
 \section{Struktura klienta}
 \begin{enumerate}

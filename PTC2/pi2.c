@@ -10,7 +10,7 @@ double step;
 int main(int argc, char* argv[])
 {
 	printf ("Nazwa programu: %s\n", __FILE__);
-	if (argc>0){
+	if (argc>1){
 		omp_set_num_threads(atoi(argv[1]));
 		printf("Zadana liczba wątków: %s\n", argv[1]);
 	}
