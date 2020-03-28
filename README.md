@@ -6,4 +6,4 @@ Zadanie 2
 
 -- ./uruchamiacz.sh Uruchamia wszystkie kody od seriala (pi_s.c) do pi6, równoległe w 3 różnych trybach(2, 4, 8 wątków - zależnie od lst w bashu), przepisuje je do formatu texa i wypisuje na out
 
--- W sprawku jest... sprawko
+-- W sprawku jest... sprawko, niebawem dokończone
