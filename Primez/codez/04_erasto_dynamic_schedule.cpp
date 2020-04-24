@@ -1,6 +1,5 @@
 #include "utils.cpp"
 
-int sqlist[D], squarez[20][D], ij[20];
 void better_par_erasto_sieve(int *res, int n){
 	int i, sq=0;
 	res[0]=res[1]=0;
@@ -25,23 +24,11 @@ void better_par_erasto_sieve(int *res, int n){
 		int j=0;
 		for (j=i*i; j<=n; j+=i) res[j]=1, cloock++;
 		t2=omp_get_wtime();
-		printf ("%d %d %d %.6lf %d\n", n, omp_get_thread_num(), ij[i], t2-t1, cloock);
+		printf ("%d %d %.6lf %d\n", n, omp_get_thread_num(), t2-t1, cloock);
 	}
 }
 
 
-int p[C];
-int main(){
-	int l, r, i;
-	double t1, t2;
-	scanf ("%d %d", &l, &r);
-	//linear_sieve(p, r);
-	
-	t1=omp_get_wtime();
-	better_par_erasto_sieve(p, r);
-	t2=omp_get_wtime();
-	printf ("%.6lf\n", t2-t1);
-	
-	writer(p, l, r, "better_par_erasto_sieve.txt");
-	
+int main(int argc, char *argv[]){	
+	base(argc, argv, &better_par_erasto_sieve, "T04_erasto_dynamic_schedule.txt");
 return 0;}

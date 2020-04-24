@@ -1,6 +1,6 @@
 #include "utils.cpp"
 
-int sqlist[D], squarez[20][D], ij[20];
+int squarez[20][D], ij[20];
 void better_par_erasto_sieve(int *res, int n){
 	int proc, i, j, jj, sq=0;
 	double summa=0, part;
@@ -53,7 +53,7 @@ void better_par_erasto_sieve(int *res, int n){
 #pragma omp parallel for
 	for (jj=0;jj<proc;jj++){
 		double t1=omp_get_wtime(), t2;
-		int falka=omp_get_thread_num(), cloock=0, locsq=sq;
+		int falka=omp_get_thread_num(), cloock=0;
 		printf ("%d %d %d\n", n, falka, jj);
 
 		int i=0, j=0, ite, prv=ij[jj];
@@ -69,18 +69,6 @@ void better_par_erasto_sieve(int *res, int n){
 }
 
 
-int p[C];
-int main(){
-	int l, r, i;
-	double t1, t2;
-	scanf ("%d %d", &l, &r);
-	//linear_sieve(p, r);
-	
-	t1=omp_get_wtime();
-	better_par_erasto_sieve(p, r);
-	t2=omp_get_wtime();
-	printf ("%.6lf\n", t2-t1);
-	
-	writer(p, l, r, "better_par_erasto_sieve.txt");
-	
+int main(int argc, char *argv[]){
+	base(argc, argv, &better_par_erasto_sieve, "T03_better_par_erasto_sieve.txt");
 return 0;}

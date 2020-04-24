@@ -1,0 +1,114 @@
+\documentclass[12pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[svgnames]{xcolor}
+\usepackage[a4paper,bindingoffset=0.2in,%
+            left=0.5in,right=0.5in,top=0.5in,bottom=1in,%
+            footskip=.25in]{geometry}
+\pagenumbering{gobble}
+\usepackage[colorlinks=true, linkcolor=Black, urlcolor=Blue]{hyperref}
+\usepackage{graphicx}
+\usepackage{subcaption}
+\usepackage{listings}
+\usepackage{color}
+\usepackage[svgnames]{xcolor}
+
+\begin{document}
+\title{Sprawozdanie z zadania na Przetwarzanie Równoległe\\
+\large Projekt 1\\
+\large Sebastian Michoń 136770, Marcin Zatorski 136834}
+\date{\vspace{-10ex}}
+\maketitle
+
+\section{Wstęp}
+\begin {enumerate}
+\item Sebastian Michoń 136770: grupa dziekańska L1
+\item Marcin Zatorski 136834: grupa dziekańska L10
+\item Wymagany termin oddania sprawozdania: 27.04.2020r.
+\item Rzeczywisty termin oddania sprawozdania: 27.04.2020r.
+\item Wersja I sprawozdania
+\item Adresy mailowe: sebastian.michon@student.put.poznan.pl, marcin.r.zatorski@student.put.poznan.pl
+\end {enumerate}
+
+\section{Wykorzystywany system równoległy}
+\begin {enumerate}
+	\item Kompilator: gcc 7.5.0
+	\item System operacyjny: Ubuntu 18.04
+	\item Procesor Intel(R) Core(TM) i7-4790K CPU @ 4.00GHz - 4 rdzenie, 2 wątki na 1 rdzeń: 8 procesorów logicznych i 4 fizyczne
+\end {enumerate}
+
+\section{Tablica wynków: kody od Pi2 do Pi6 w 3 wersjach}
+\begin{flushleft}
+	\begin{tabular}{| l | l | l | l | l | l |}
+		\hline
+		Kod & Wątki & Rzeczywisty czas obliczeń & Czas użycia procesorów & Przysp. & Pi \\ \hline
+		./pi\_s.c &  1 &  11.106908 &  11.106908 &  - &  3.141592653590 \\ \hline
+		./pi2.c &  2 &  9.854029 &  19.660201 &  1.12714383 &  1.629332922363 \\ \hline
+		./pi2.c &  4 &  6.201361 &  22.991912 &  1.79104361 &  0.606812628416 \\ \hline
+		./pi2.c &  8 &  4.855977 &  37.927782 &  2.28726536 &  0.407415018512 \\ \hline
+		./pi3.c &  2 &  32.231695 &  61.883320 &  .344595839 &  3.141592653590 \\ \hline
+		./pi3.c &  4 &  68.859282 &  269.248873 &  .161298632 &  3.141592653590 \\ \hline
+		./pi3.c &  8 &  102.148402 &  721.992069 &  .108733056 &  3.141592653590 \\ \hline
+		./pi4.c &  2 &  5.644930 &  11.230873 &  1.96759003 &  3.141592653590 \\ \hline
+		./pi4.c &  4 &  2.862752 &  11.442671 &  3.87980097 &  3.141592653590 \\ \hline
+		./pi4.c &  8 &  1.489600 &  11.794959 &  7.45630236 &  3.141592653590 \\ \hline
+		./pi5.c &  2 &  5.616025 &  11.189766 &  1.97771697 &  3.141592653590 \\ \hline
+		./pi5.c &  4 &  2.865750 &  11.450181 &  3.87574212 &  3.141592653590 \\ \hline
+		./pi5.c &  8 &  1.493857 &  11.804175 &  7.43505435 &  3.141592653590 \\ \hline
+		./pi6.c &  2 &  6.310614 &  12.557454 &  1.76003602 &  3.141592653590 \\ \hline
+		./pi6.c &  4 &  4.567762 &  15.864548 &  2.43158640 &  3.141592653590 \\ \hline
+		./pi6.c &  8 &  3.467091 &  25.773811 &  3.20352364 &  3.141592653590 \\ \hline
+	\end{tabular}
+gdzie Czas użycia procesorów jest sumaryczny, a Przysp. to skrót od przyspieszenia kodu równoległego względem sekwencyjnego.
+	
+\end{flushleft}
+\begin{enumerate}
+	\item Kod pi2.c różni się od kodu sekwencyjnego dodaniem dyrektywy 
+	\begin{lstlisting}[language=C]
+		#pragma omp paralel for
+	\end{lstlisting}
+	dla pętli obliczającej pi. Zarówno $x$ jak i $sum$ są współdzielone przez wątki; błędny wynik wynika z wyścigu w dostępie do danych (który zachodzi np. jeśli jeden wątek zmieni wartość $x$-a w momencie w którym 2. wątek dodaję wartość zależną od $x$-a do sumy - jeśli 1. zapisze dane przed 2. wątkiem, ten 2. będzie korzystał z niepoprawnych danych), który zachodzi, ponieważ nie ma sychronizacji w dostępie do zmiennych współdzielonych. Sumaryczne czasy użycia procesorów są wyższe niż dla kodu sekwencyjnego, ponieważ nie zachodzi czasowa lokalność odwołań - dane muszą być zmieniane w pamięci po każdej zmianie sumy, ponadto jeśli $x$ został zmieniony pomiędzy zapisem $x$-a a zmianą sumy przez wątek, $x$ też zostanie zmieniony, choć nie powinien (jeśli algorytm ma działać poprawnie).
+	\\
+	
+	
+	\item Kod pi3.c ma lokalną dla wątku zmienną $x$ i zapis do sumy następuje z użyciem dyrektywy:
+	\begin{lstlisting}[language=C]
+		#pragma omp atomic
+	\end{lstlisting}
+		Co za tym idzie, zmienna współdzielona $sum$ jest uaktualniana w punkcie czasu przez dokładnie 1 wątek i nie zachodzi wyścig w dostępie do danych. Kod nie jest efektywny, ponieważ wykonuje $10^{9}$ razy operację założenia i zdjęcia zamka(blokady) na współdzielonej zmiennej $sum$ (przy czym najpewniej zachodzą jakieś optymalizacje, np. zamek jest zwalniany w momencie, gdy inny wątek chce zapisać do sumy, a nie bezpośrednio po jej aktualizacji - to by wyjaśniało dlaczego kod używający 2 wątków jest szybszy niż ten używający 8 wątków).\\
+	
+	\item Kod pi4.c różni się od pi3.c tym, że każdy wątek zapisuje i odczytuje lokalną dla wątku zmienną, po zakończeniu obliczeń zmienia atomowo sumę; nie zachodzi wyścig, ponieważ zmienne $x$ i $s2$ (suma dla pojedynczego wątku) są lokalne dla wątku, a zmienna $sum$ jest aktualizowana w punkcie czasu przez co najwyżej jeden wątek, ponieważ jest aktualizowana atomowo. Lokalne zmienne $x$ i $s2$ znajdują się w pamięci procesorów, które na nich operują i nie są zmieniane i odczytywane przez inne wątki, co implikuje czasową lokalność odwołań i efektywność: Sumaryczny czas użycia procesorów jest prawie taki sam jak kodu sekwencyjnego, użycie większej liczby procesorów prowadzi do przyspieszenia rzeczywistego wykonania kodu tyle razy, ile jest procesorów logicznych.\\
+	
+	\item Kod pi5.c jest podobny do kodu pi4.c, ale zamiast lokalnych zmiennych sumy jest tam:
+	\begin{lstlisting}[language=C]
+	#pragma omp parallel for private(x) reduction(+:sum)
+	\end{lstlisting}
+	co działa nieomal dokładnie w ten sam sposób co pi4.c, ponieważ dyrektywa tworzy zmienną lokalną dla wątku, która jest aktualizowana zamiast współdzielonej $sum$ w pętli i dodawana do zmiennej globalnej dla wątków dopiero po zakończeniu działania w pętli przez wątek. Co za tym idzie, czasowo ten algorytm funkcjonuje prawie tak samo jak pi4.c.\\
+	
+	\item Kod pi6.c różni się od pi4.c tym, że zamiast pojedynczych zmiennych lokalnych do sumowania została użyta tablica typu double[] taka, że każdy wątek aktualizuje tylko 1 indeks - co za tym idzie, zachodzi zjawisko false sharingu - zapisy do tablicy w 1 wątku powodują konieczność zmiany całej linii pamięci w innych pamięciach podręcznych procesorów, ponieważ te mają w swoich liniach pamięci własne kopie kolejnych wartości tej tablicy. Zmniejsza to  przestrzenną lokalność odwołań i efektywność kodu, sumaryczny czas użycia procesorów rośnie wraz ze zwiększeniem liczby wątków - a co za tym idzie, więcej razy zachodzi pobieranie linii do pamięci podręcznych procesora, ponieważ więcej wątków aktualizuje i odczytuje dane z tablicy.\\
+	
+\end{enumerate}
+	 
+\section{Długość linii}
+Kod pi7.c wypisywał najniższe wartości czasu (niecałe 5.6 s) dla 2 wątków w iteracjach $k$ takich, że\\ 
+\begin{center}
+	$k\equiv7\ \textrm{mod}\ 8$
+\end{center}
+Przy czym w $k$-tej iteracji używałem wartości tablicy o indeksach $k$ i $k+1$, a iteracje indeksowałem od 0: co za tym idzie, długość linii pamięci podręcznej procesora, którego używałem to 64 bajty, ponieważ na moim systemie rozmiar chara to 1 bajt, a:
+\begin{center}
+	$sizeof(double)==8$
+\end{center}
+Czyli rozmiar typu double to 8 rozmiarów chara czyli 8 bajtów. Co za tym idzie, rozmiar linii pamięci w moim procesorze to $8*8=64$ bajty
+
+\section{Wyjaśnienie, trudności}
+\begin{enumerate}
+	\item W 0. iteracji korzystam z indeksów (0, 1) tablicy $double[]$; w 1. z indeksów (1, 2), ... w 7. z indeksów (7, 8) i tak dalej.
+	\item W 25 pierwszych iteracjach najniższe wyniki czasowe uzyskuje w 7., 15. i 23. iteracji. Można to logicznie uzasadnić, jeśli linia pamięci podręcznej procesora ma 8 bajtów: w 0., 1., ... 6. iteracji 2 procesory nadpisują wzajemnie własne linie pamięci podręcznej, bo pobierają za każdym razem kolejne 8 doubli z tablicy $double[]$ (0...7) - co za tym idzie, zmiana w tej tablicy wymusza zmianę w linii pamięci podręcznej 2. procesora. 
+	\item W 7. iteracji 1. procesor ma w swojej linii pamięci elementy tablicy $double[]$ o indeksach 0...7, 2. procesor ma w swojej linii pamięci elementy tablicy $double[]$ o indeksach 8...15. 2 procesory nie nadpisują swoich linii pamięci, co przyspiesza działanie programu. Analogicznie, w 15. iteracji 1. procesor ma w swojej linii pamięci elementy tablicy $double[]$ o indeksach 8...15, 2. procesor - indeksy 16...23. To zjawisko powtarza się cyklicznie co 8 bajtów. Nie widzę innego sensownego uzasadnienia, dlaczego właśnie 7., 15. i 23. i kolejne co ósme iteracje dawały najlepsze rezultaty, dlatego przyjmuje powyższe rozumowanie za co najmniej zasadne, szczególnie zważając na to, że linia pamięci podręcznej mojego procesora ma 64 bajty zgodnie z jej dokumentacją.
+	\item Gdy zamiast kolejnych wartości tablicy używałem wartości tablicy o indeksach, których różnica wynosi 20 dla 2 wątków, wyniki czasowe iteracji były takie same jak dla co 8. iteracji używając kolejnych elementów tablicy, co wzmacnia tezę o tym, że przestrzenna lokalność odwołań ma wpływ na długość obliczeń i to, że linia pamięci faktycznie ma 8 bajtów.
+	\item Jedyną trudnością były zdarzające się iteracje, w których procesor delikatnie zwalniał, zapewne w wyniku procesów w tle, po wyeliminowaniu których otrzymałem powyższe rezultaty. Różnice pomiędzy 7., 15., 23. ... a pozostałymi iteracjami były rzędu 0.15-0.4 sekundy, dlatego zasadnym było albo wydłużenie pętli, albo wyeliminowanie zbędnych procesów w tle.
+\end{enumerate}
+
+
+\end{document}

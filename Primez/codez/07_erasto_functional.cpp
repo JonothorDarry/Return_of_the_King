@@ -33,18 +33,6 @@ void func_par_erasto(int *res, int n){
 }
 
 
-int p[C];
-int main(){	
-	int l, r, i;
-	double t1, t2;
-	scanf ("%d %d", &l, &r);
-	//linear_sieve(p, r);
-	
-	t1=omp_get_wtime();
-	func_par_erasto(p, r);
-	t2=omp_get_wtime();
-	printf ("%.6lf\n", t2-t1);
-	
-	writer(p, l, r, "functional_erasto.txt");
-
+int main(int argc, char *argv[]){	
+	base(argc, argv, &func_par_erasto, "T07_func_par_erasto");
 return 0;}
