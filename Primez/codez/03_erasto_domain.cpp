@@ -4,7 +4,6 @@ int squarez[20][D], ij[20];
 void better_par_erasto_sieve(int *res, int n){
 	int proc, i, j, jj, sq=0;
 	double summa=0, part;
-	res[0]=res[1]=0;
 	sq=floor(sqrt(n));
 	//omp_set_num_threads(4);
 	
@@ -45,7 +44,7 @@ void better_par_erasto_sieve(int *res, int n){
 			end=j-1;
 		}
 
-		printf ("At %d: Process %d executes: %.6lf, as a part: %.6lf\n", n, i, partsum, partsum/summa);
+		//printf ("At %d: Process %d executes: %.6lf, as a part: %.6lf\n", n, i, partsum, partsum/summa);
 		//for (j=0;j<ij[i];j++) printf ("%d\n", squarez[i][j]);
 	}
 	
@@ -53,18 +52,17 @@ void better_par_erasto_sieve(int *res, int n){
 #pragma omp parallel for
 	for (jj=0;jj<proc;jj++){
 		double t1=omp_get_wtime(), t2;
-		int falka=omp_get_thread_num(), cloock=0;
-		printf ("%d %d %d\n", n, falka, jj);
+		int falka=omp_get_thread_num();
+		//printf ("%d %d %d\n", n, falka, jj);
 
 		int i=0, j=0, ite, prv=ij[jj];
 
 		for (ite=0;ite<prv;ite++){
 			i=squarez[jj][ite];
-			for (j=i*i; j<=n; j+=i) res[j]=1, cloock++;
-			if (ij[jj]<10) printf ("%d %d\n", jj, i);
+			for (j=i*i; j<=n; j+=i) res[j]=1;
 		}
 		t2=omp_get_wtime();
-		printf ("%d %d %d %d %.6lf %d\n", n, omp_get_thread_num(), jj, ij[jj], t2-t1, cloock);
+		//printf ("%d %d %d %d %.6lf %d\n", n, omp_get_thread_num(), jj, ij[jj], t2-t1, cloock);
 	}
 }
 

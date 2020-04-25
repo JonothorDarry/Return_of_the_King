@@ -18,13 +18,11 @@ void better_par_erasto_sieve(int *res, int n){
 	for (i=0;i<sq;i++){
 		if (res[i]==1) continue;
 		double t1=omp_get_wtime(), t2;
-		int falka=omp_get_thread_num(), cloock=0;
-		printf ("%d %d\n", n, falka);
+		int falka=omp_get_thread_num();
 
 		int j=0;
-		for (j=i*i; j<=n; j+=i) res[j]=1, cloock++;
+		for (j=i*i; j<=n; j+=i) res[j]=1;
 		t2=omp_get_wtime();
-		printf ("%d %d %.6lf %d\n", n, omp_get_thread_num(), t2-t1, cloock);
 	}
 }
 

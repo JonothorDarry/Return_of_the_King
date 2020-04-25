@@ -25,16 +25,6 @@ void linear_sieve(int *res, int n){
 }*/
 
 
-int p[C];
-int main(){
-	int l, r, i;
-	double t1, t2;
-	scanf ("%d %d", &l, &r);
-	//linear_sieve(p, r);
-	t1=omp_get_wtime();
-	erasto_sieve(p, r);
-	t2=omp_get_wtime();
-	printf ("%.6lf\n", t2-t1);
-	writer(p, l, r, "basic_erasto_sieve.txt");
-	
+int main(int argc, char *argv[]){
+	base(argc, argv, &erasto_sieve, "T01_erasto_sieve.txt");
 return 0;}

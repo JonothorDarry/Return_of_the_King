@@ -2,7 +2,7 @@
 #include <math.h>
 #include <omp.h>
 #define max(a, b) ((a>b)?(a):(b))
-const int C=1500000001, D=50001;
+const int C=500000001, D=50001;
 
 void writer(int *p, int l, int r, const char* text){
 	int i;
@@ -16,9 +16,8 @@ void writer(int *p, int l, int r, const char* text){
 
 int p[C];
 void base(int argc, char *argv[], void fun(int *p, int a), const char *text){
-	int l, r;
+	int l=atoi(argv[1]), r=atoi(argv[2]);
 	double t1, t2;
-	scanf ("%d %d", &l, &r);
 	//linear_sieve(p, r);
 	
 	t1=omp_get_wtime();
@@ -26,6 +25,6 @@ void base(int argc, char *argv[], void fun(int *p, int a), const char *text){
 	t2=omp_get_wtime();
 	printf ("%.6lf\n", t2-t1);
 	
-	writer(p, l, r, text);
+	//writer(p, l, r, text);
 }
 
