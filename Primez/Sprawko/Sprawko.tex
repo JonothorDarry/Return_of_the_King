@@ -14,6 +14,31 @@
 \usepackage{color}
 \usepackage[svgnames]{xcolor}
 
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+\lstdefinestyle{mystyle}{
+	backgroundcolor=\color{backcolour},   
+	commentstyle=\color{codegreen},
+	keywordstyle=\color{magenta},
+	numberstyle=\tiny\color{codegray},
+	stringstyle=\color{codepurple},
+	basicstyle=\ttfamily\footnotesize,
+	breakatwhitespace=false,         
+	breaklines=true,                 
+	captionpos=b,                    
+	keepspaces=true,                 
+	numbers=left,                    
+	numbersep=5pt,                  
+	showspaces=false,                
+	showstringspaces=false,
+	showtabs=false,                  
+	tabsize=2
+}
+
+
 \begin{document}
 \title{Sprawozdanie z zadania na Przetwarzanie Równoległe\\
 \large Projekt 1\\
@@ -43,7 +68,7 @@
 \section{Użyte kody}
 \begin {enumerate}
 	\item 01\_erasto\_single.cpp - Kod sekwencyjny, standardowe sito erastotenesa działające w\\ \(O(r*loglog(r))\), z podwójną optymalizacją: do odsiewania używane są tylko liczby pierwsze, ponadto odsiew rozpoczyna się od kwadratu danej liczby - jest to poprawne, ponieważ jeśli liczba nie jest pierwsza to jej najniższy dzielnik wyższy od 1 jest mniejszy równy jej pierwiastkowi.
-	\begin{lstlisting}[caption= Sito Erastotenesa][language=C]
+	\begin{lstlisting}[style=mystyle, caption= Sito Erastotenesa][language=C]
 	for (i=2;i*i<=n;i++){
 		if (res[i]==0){
 			for (j=i*i;j<=n;j+=i) res[j]=1;
@@ -52,7 +77,7 @@
 	\end{lstlisting}
 	Celem kodu jest jedynie pokazanie koncepcji; nie zachodzi wyścig ani nie ma synchronizacji, ponieważ jest jeden wątek.
 	\item 02\_most\_primitive.cpp - Kod sekwencyjny, który szuka dzielnika liczby pośród liczb mniejszych równych jej pierwiastkowi. Rozwiązanie to dizała w złożoności \(O((r-l)*\sqrt{r})\). Sprawdzałem podzielność także dla liczb, które nie są pierwsze, aby nie używać żadnych tablic poza tablicą znalezionych liczb pierwszych - celem jest pokazanie kodu wykorzystującego w jak najmniejszym stopniu tablice.
-	\begin{lstlisting}[caption= Rozwiązanie pierwiastkowe][language=C]
+	\begin{lstlisting}[style=mystyle, caption= Rozwiązanie pierwiastkowe][language=C]
 	for (i=2;i<=n;i++){
 		for (j=2;j*j<=i;j++){
 			if (i%j==0) {
@@ -63,7 +88,7 @@
 	}
 	\end{lstlisting}
 	\item 03\_erasto\_functional\_static\_schedule.cpp - kod równoległy, koncepcja sita, podejście funkcyjne. Funkcja najpierw wyznacza rekursywnie wszystkie liczby pierwsze mniejsze równe pierwiastkowi z docelowego rozmiaru sita, następnie sama poszukuje liczb pierwszych mniejszych równych zadanej liczbie. Kluczowa część algorytmu wygląda tak: (gdzie res[i]==0 oznacza liczbę pierwszą):
-	\begin{lstlisting}[caption= Sito funkcyjne ze static schedulingiem][language=C]
+	\begin{lstlisting}[style=mystyle, caption= Sito funkcyjne ze static schedulingiem][language=C]
 	#pragma omp parallel for
 		for (i=0;i<=sq;i++){
 			if (res[i]==1) continue;
@@ -72,11 +97,51 @@
 	\end{lstlisting}
 	Gdzie res[i]==0 oznacza liczbę pierwszą, a \(sq\) oznacza \(\lfloor(\sqrt{n})\rfloor\). Własności tego kodu:
 	\begin{enumerate}
-		\item Dyrektywa powyżej tworzy zbiór wątków, którym przydziela w przybliżeniu równy podzbiór iteracji do wykonania; co istotne, przy tak sformułowanym kodzie wątek będzie wykonywał kolejne iteracje - na przykład 1. wątek może wykonać je dla i=2, 3, 5, 7, a 2. wątek dla 11, 13, 17, 19. Jest to nieefektywne, ponieważ procesy dostaną taką samą ilość liczb, którymi będą odsiewać liczby sita, a proces, który dostanie liczby najmniejsze wykona najwięcej operacji: w powyższym przypadku, 1. wątek wykona nieco mniej niż \(\frac{n}{2}+\frac{n}{3}+\frac{n}{5}+\frac{n}{7}\) operacji oznaczenia liczby (gdzie \(n\) to rozmiar sita - "nieco mniej" wynika z tego, że nie odznaczam liczb \(x<\sqrt{n})\)), a 2. wątek \(\frac{n}{11}+\frac{n}{13}+\frac{n}{17}+\frac{n}{19}\) - czyli dużo mniej.
+		\item Dyrektywa powyżej tworzy zbiór wątków, którym przydziela w przybliżeniu równy podzbiór iteracji pętli do wykonania; co istotne, przy tak sformułowanym kodzie wątek będzie wykonywał kolejne iteracje - na przykład 1. wątek może wykonać je dla i=2, 3, 5, 7, a 2. wątek dla 11, 13, 17, 19. Jest to nieefektywne, ponieważ procesy dostaną taką samą ilość liczb, którymi będą odsiewać liczby sita, a proces, który dostanie liczby najmniejsze wykona najwięcej operacji: w powyższym przypadku, 1. wątek wykona nieco mniej niż \(\frac{n}{2}+\frac{n}{3}+\frac{n}{5}+\frac{n}{7}\) operacji oznaczenia liczby (gdzie \(n\) to rozmiar sita - "nieco mniej" wynika z tego, że nie odznaczam liczb \(x<\sqrt{n})\)), a 2. wątek \(\frac{n}{11}+\frac{n}{13}+\frac{n}{17}+\frac{n}{19}\) - czyli dużo mniej.
 		\item Nie zachodzi wyścig (rozumiany jako zależność działania programu od kolejności wykonywania wątków), ponieważ wątki modyfikują tylko część tablicy, która nie jest używana do znajdowania liczb pierwszych, ponadto jeśli zmieniam wartość jakiegoś elementu tablicy, w której zaznaczam liczby pierwsze, to mogę tylko oznaczyć liczbę jako pierwszą; co za tym idzie, jeśli liczba zostanie oznaczona przez kilka wątków jako liczba pierwsza, to niezależnie od tego, który z nich oznaczy ją jako pierwszy, który później nie ma żadnego znaczenia z punktu widzenia występowania wyścigu.
 		\item Synchronizacja zachodzi tylko na końcu pętli for, nie powinna mieć istotnego wpływu na czas obliczeń - wywołania rekursywne wykonają się relatywnie szybko, bo suma rozmiarów sit, które będą w nich wypełniane jest nie większa niż \(2*\sqrt{n}\) - można to pokazać przez \(\sqrt[2]{n}+\sqrt[4]{n}+..+k\le\sqrt{n}+\frac{\sqrt{n}}{2}+\frac{\sqrt{n}}{4}+..+\frac{\sqrt{n}}{2^{\lfloor log_2(n) \rfloor}}\le 2*\sqrt{n}\), gdzie \(k \le 4\) - warunek początkowy rekursji, zaś czas wykonania całego sita i tak jest ograniczony przez czas wykonania najwolniejszego procesu w pierwszym wywołaniu funcji (nierekursywnym).
 		\item False sharing zachodzi w szczególnym przypadku, gdy sprawdzam pod kątem pierwszości liczbę \(x\), razem z nią ściągając do cache część ciągu, która może się zmieniać, ponieważ \(|x-sqrt{n}|<64\) (64 bajty to rozmiar linii pamięci, a rozmiar typu bool to 1 bajt). Może on jednak zajść nie więcej niż \(64*log_2(n)\) razy, bo \(\sqrt[log_2(n)]{n}\le 4\) - jest to liczba o kilka rzędów wielkości mniejsza niż \(n\), zatem (co pokaże później VTune profiler) false sharing nie będzie istotnie wpływał na czas przetwarzania.
 	\end{enumerate}
+	\item 04\_erasto\_functional\_handmade\_scheduling.cpp - kod równoległy, koncepcja sita, podejście funkcyjne. Kod jest analogiczny do poprzedniego, ale iteracje są ręcznie przypisywane do każdego wątku - Najpierw wyliczam sumę \(sum=\frac{n}{2}+\frac{n}{3}+\frac{n}{5}+\frac{n}{7}+...+\frac{n}{np}\), gdzie \(np\) to najwyższa liczba pierwsza \(np\le\sqrt{n}\)  i średnią liczbę operacji które mają być wykonywane przez proces: \(psum=\frac{sum}{proc\_number}\), gdize \(proc\_number\) to liczba procesów. Następnie każdemu procesowi przydzielam w osobnej tablicy liczby pierwsze, którymi będzie skreślał elementy tablicy w ten sposób, że:
+	\begin{enumerate}
+		\item \(i\)-ty proces dostanie \(i\)-tą liczbę pierwszą
+		\item następnie proces będzie dobierał sobie wolne liczby pierwsze począwszy od \(np\) do momentu, w którym jego szacowana liczba operacji nie przekroczy \(psum\)
+	\end{enumerate}
+	Kod, który wykonuje takie operacje jest przedstawiony tutaj:
+	\begin{lstlisting}[style=mystyle, caption= Sito funkcyjne z ręcznym schedulingiem][language=C]
+	int beg=0, end=sq;
+	double partsum=0;
+	for (i=0;i<proc;i++){
+		ij[i]=0;
+		partsum=0;
+		for (j=beg;j<=end;j++){
+			if (res[j]==0) {
+				squarez[i][ij[i]]=j, partsum+=1.0/j, ij[i]++;
+				break;
+			}
+		}
+		beg=j+1;
+		if (partsum<part){
+			for (j=end;j>=beg;j--){
+				if (res[j]==0) {
+					squarez[i][ij[i]]=j, partsum+=1.0/j, ij[i]++;
+				}
+				if (partsum>=part) break;
+			}
+			end=j-1;
+		}
+	}
+	\end{lstlisting}
+	Dzięki powyższemu rozwiążę problem przedstawiony w części (a) poprzedniego rozwiązania - procesy będą względnie równo dzielić się pracą bez dodatkowego narzutu związanego z synchronizacją, przy czym procesy, które wezmą najniższe liczby pierwsze (2, 3, czasem 5) nadal wykonają największą pracę, ponieważ dla \(n<500000000 \land psum=8\) zachodzi \(\frac{n}{2}\ge psum)\) - Analogicznie dla 3. Pozostałe części rozwiązania - (b), (c), (d) są identyczne dla tego kodu
+	\item 05\_erasto\_functional\_dynamic\_schedule.cpp - działa tak jak kod (3), ale używa innej dyrektywy:
+	\begin{lstlisting}[style=mystyle, caption= Sito funkcyjne z dynamic schedulingiem][language=C]
+	#pragma omp parallel for schedule(dynamic)
+		for (i=0;i<=sq;i++){
+			if (res[i]==1) continue;
+			for (int j=i*i; j<=n; j+=i) res[j]=1;
+		}
+	\end{lstlisting}
+	Dzięki zmianie dyrektywy na schedule(dynamic) wątek po zakończeniu swojej pracy wykonuje część (blok) pracy innego wątku zamiast niego - dzięki temu wątki będą się dzieliły równo pracą, natomiast w porównaniu z kodem (3) dojdzie narzut związany z koniecznością synchronizacji wątków. Rozwiązanie zadania (3) używało domyślnej klauzuli schedule(static).
 	
 \end {enumerate}
 

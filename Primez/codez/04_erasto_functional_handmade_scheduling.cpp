@@ -1,18 +1,19 @@
 #include "utils.cpp"
 
 int squarez[20][D], ij[20];
-void better_par_erasto_sieve(int *res, int n){
+void better_par_erasto_sieve(bool *res, int n, int thr){
 	int proc, i, j, jj, sq=0;
 	double summa=0, part;
 	sq=floor(sqrt(n));
 	//omp_set_num_threads(4);
 	
-	if (n>4) better_par_erasto_sieve(res, sq);
+	if (n>4) better_par_erasto_sieve(res, sq, thr);
 	else{
 		if (n>=4) res[0]=res[1]=res[4]=1;
 		else res[0]=res[1]=1;
 		return;
 	}
+	omp_set_num_threads(thr);
 
 	//Sumaric amount of work for each process, so that they'll be approximately equal
 	proc=omp_get_max_threads();
