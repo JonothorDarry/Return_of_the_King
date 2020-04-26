@@ -44,25 +44,21 @@ void better_par_erasto_sieve(bool *res, int n, int thr){
 			}
 			end=j-1;
 		}
-
-		//printf ("At %d: Process %d executes: %.6lf, as a part: %.6lf\n", n, i, partsum, partsum/summa);
-		//for (j=0;j<ij[i];j++) printf ("%d\n", squarez[i][j]);
 	}
 	
 	//Pure sieve
 #pragma omp parallel for
 	for (jj=0;jj<proc;jj++){
-		double t1=omp_get_wtime(), t2;
-		int falka=omp_get_thread_num();
 		//printf ("%d %d %d\n", n, falka, jj);
-
-		int i=0, j=0, ite, prv=ij[jj];
+		int i=0, j=0, ite, prv=ij[jj], sv=sq+1;
 
 		for (ite=0;ite<prv;ite++){
 			i=squarez[jj][ite];
+			sv=sq+1;
+			j=sv-sv%i+((sv%i==0)?0:i);
+			for (j=min(i*i, j); j<=n; j+=i) res[j]=1;
 			for (j=i*i; j<=n; j+=i) res[j]=1;
 		}
-		t2=omp_get_wtime();
 		//printf ("%d %d %d %d %.6lf %d\n", n, omp_get_thread_num(), jj, ij[jj], t2-t1, cloock);
 	}
 }
