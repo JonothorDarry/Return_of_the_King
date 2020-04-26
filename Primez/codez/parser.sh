@@ -26,7 +26,7 @@ shower(){
         echo "Retired $retired"
         echo "Front-End_bound $febound"
         echo "Bront-End_bound $bebound"
-        echo "Memory_bound $memebound"
+        echo "Memory_bound $membound"
         echo "Core_bound $corbound"
 
         echo "L1_bound $l1bound"
@@ -45,7 +45,9 @@ process(){
 			for zz in "${threadz[@]}"
 			do
 				echo ''
-				echo "code: $code; left, right: $mm, threads: $zz"
+				echo "code: $code"
+				echo "left_right: $mm"
+				echo "threads: $zz"
 				data=$(g++ -Ofast -fopenmp $code && sudo ./vtune 2>/dev/null -collect uarch-exploration ./a.out $mm $zz)
 				shower
 				echo ''
