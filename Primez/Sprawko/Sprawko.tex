@@ -228,9 +228,23 @@
 		\item Jedyna synchronizacja zajdzie na końcu pętli for.
 		\item False sharing może zachodzić tylko na stykach podzbiorów zbioru otwartego modyfikowanych przez 2 wątki.
 	\end{enumerate}
-
-	
 \end {enumerate}
+
+\section {Wprowadzenie do rezultatów pomiarów}
+\begin{enumerate}
+	\item 
+	\item VTune Profiler używa licznika zdarzeń sprzętowych do zdobycia informacji na temat przetwarzania, po czym (po przetwarzaniu) łączy te informacje w metryki np. CPI. Metryki, które zostały użyte w tym sprawozdaniu, to: 
+	\begin{enumerate}
+		\item Clockticks - Liczba cykli procesora w trakcie przetwarzania
+		\item Instructions retired - liczba instrukcji, które zostały w pełni wykonane
+		\item Retiring - procent wydanych mikroinstrukcji, które zostały wykonane
+		\item Front-end bound - ile procent mikroinstrukcji nie zostało wykonane przez ograniczenie części wejściowej procesora, albo inaczej: jak często back-end mógł przyjąć jakąś instrukcję, ale nie otrzymał jej od front-endu. Front-end odpowiada za przyniesienie instrukcjim (fetch), zdekodowanie jej i przekazanie do back-endu.
+		\item Back-end bound - ile procent mikroinstrukcji nie zostało wykonane przez ograniczenie części wyjściowej procesora, albo incaczej: jak często back-end nie przyjmuje instrukcji od front-endu, ponieważ nie ma zasobów na ich przetworzenie. Składają się na to: Core Bound i Memory bound.
+		\item Memory bound - ile procent mikroinstrukcji mogło nie zostać wykonane przez zapotrzebowanie na załadowanie albo składowanie instrukcji - czyli narzut związany z dostępem do pamięci, której albo nie ma w cache, albo jest zabrudzona.
+		\item Core bound - ile procent mikroinstrukcji mogło nie zostać wykonane przez ograniczenia inne miż te związane z pamięcią - między innymi dzielenie.
+		\item Effective physical core utilization - ile procent fizycznych rdzeni średnio było używanych w trakcie przetwarzania.
+	\end{enumerate}
+\end{enumerate}
 
 \section{Tablica wynków: kody od Pi2 do Pi6 w 3 wersjach}
 \begin{flushleft}
