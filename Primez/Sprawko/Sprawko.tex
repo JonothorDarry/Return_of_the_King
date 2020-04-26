@@ -142,6 +142,80 @@
 		}
 	\end{lstlisting}
 	Dzięki zmianie dyrektywy na schedule(dynamic) wątek po zakończeniu swojej pracy wykonuje część (blok) pracy innego wątku zamiast niego - dzięki temu wątki będą się dzieliły równo pracą, natomiast w porównaniu z kodem (3) dojdzie narzut związany z koniecznością synchronizacji wątków. Rozwiązanie zadania (3) używało domyślnej klauzuli schedule(static).
+	\item 07\_erasto\_domain.cpp - kod równoległy, koncepcja sita, podejście domenowe. Każdy wątek, znając swój numer, używając całej tablicy do \(\sqrt{n}\) włącznie oznacza wszystkie liczby podzielne przez daną liczbę pierwszą większe niż \(\sqrt{n}\).
+	\begin{lstlisting}[style=mystyle, caption= Sito funkcyjne z dynamic schedulingiem][language=C]
+	#pragma omp parallel
+	{
+		int left=(n/thr)*omp_get_thread_num(), i, j, based_left;
+		int right=left+n/thr-1;
+		if (omp_get_thread_num()==thr-1) right=n;
+		if (left<=sq) left=sq+1;
+		
+		for (i=0;i<=sq;i++){
+			if (res[i]==0){
+				based_left=left-left%i+((left%i==0)?0:i);
+				for (j=based_left;j<=right;j+=i){
+					res[j]=1;
+				}
+			}
+		}
+	}
+	\end{lstlisting}
+	Kod ten ma 3 zasadnicze różnice w porównaniu z kodem (3) w kontekście wspólbieżności:
+	\begin{enumerate}
+		\item Dyrektywa tworzy wątki, które podzielą się nieomal równomiernie pracą - ponieważ każdy wątek musi użyć każdej liczby pierwszej z części domkniętej sita do oznaczenia przedziału z części otwartej sita o wielkości (prawie) równej dla każdego wątku.
+		\item False sharing zachodzi w szczególnym przypadku, gdy sprawdzam pod kątem pierwszości liczbę \(x\) - albo ją odnaczam jako pierwszą, razem z nią ściągając do cache liczbę \(y\) w części otwartej używanej przez inny wątek, która może się zmieniać, ponieważ \(|x-y|<64\) (64 bajty to rozmiar linii pamięci, a rozmiar typu bool na systemie, na którym zaszło testowanie to 1 bajt). Może on jednak zajść nie więcej niż \((8+1)*64*log_2(n)\) razy, bo \(\sqrt[log_2(n)]{n}\le log_2(n)\), a liczba wątków to co najwyżej \(8\), dodatkowe \(+1\) wynika z wątku używającego podciągu obok tablicy z wyznaczonymi pierwszymi - jest to liczba o kilka rzędów wielkości mniejsza niż \(n\), zatem (co pokaże później VTune profiler) false sharing nie będzie istotnie wpływał na czas przetwarzania.
+		\item Wątki będą modyfikowały współdzielone L2 i L3 cache - co za tym idzie, często będą zachodziły cache-missy, ponieważ L2 i L3 cache będą często zmieniały dane - w praktyce każdy wątek będzie modyfikował zupełnie inne części tablicy, które będą stale się zmieniać (inaczej niż np. w przypadku, w którym 1 wątek modyfikuje co 2. element tablicy).
+	\end{enumerate}
+	\item 08\_sqrt\_functional.cpp - kod równoległy, koncepcja dzielenia, podejście funkcyjne. Każdy wątek znając swój numer wyznacza 2 liczby: left i right, oznaczające przedział, z którego będę brał liczby i sprawdzał podzielność danej liczby przez jedną z nich 
+	\begin{lstlisting}[style=mystyle, caption= Sito funkcyjne z dynamic schedulingiem][language=C]
+	int sq=floor(sqrt(n)), vv;
+	vv=(sq-2)/thr;
+	omp_set_num_threads(thr);
+	#pragma omp parallel
+	{
+		int wisdom=omp_get_thread_num(), j, i;
+		int v1=2+vv*wisdom, v2=2+vv*(wisdom+1)-1;
+		if (wisdom==thr-1) v2=sq;
+		
+		for (i=2;i<=n;i++){
+			for (j=v1;j*j<=i && j<=v2;j++){
+				if (i%j==0) {
+				res[i]=1;
+				break;
+			}
+		}
+	}
+	\end{lstlisting}
+	Własności tego kodu:
+	\begin{enumerate}
+		\item Wszystkie wątki dostaną względnie równy zbiór liczb pierwszych do sprawdzenia - to wynika ze sposobu wyznaczenia lewego i prawego końca przedziału
+		\item W kodzie tym nie zachodzą wyścigi, bo wyznaczanie dzielnika w 1 wątku i ewentualne oznaczenie liczby jako złożona jest niezależne od działania innych wątków.
+		\item Jedyna synchronizacja zajdzie na końcu pętli for.
+		\item False sharing może zajść dla całej tablicy liczb pierwszych, ponieważ wątki ją modyfikują niezależnie od siebie.
+	\end{enumerate}
+	Fundamentalnym problemem algorytmu jest nonsensowny algorytm - każda liczba jest dzielona przez liczby do pierwiastka z niej niezależnie od tego, czy znalazłem jej dzielnik w innym wątku. To zapewnia mniejszy narzut związany z synchronizacją, jednocześnie generując problemy związane z nieefektywnością.
+	
+	\item 09\_sqrt\_domain.cpp - kod równoległy, koncepcja dzielenia, podejście domenowe. Każdy wątek używa całego zbioru otwartego do odznaczania własnego podzbioru zbioru otwartego wyznaczanego przez dyrektywę \#pragma omp parallel for
+	\begin{lstlisting}[style=mystyle, caption= Sito funkcyjne z dynamic schedulingiem][language=C]
+	#pragma omp parallel for
+	for (i=2;i<=n;i++){
+		for (int j=2;j*j<=i;j++){
+			if (i%j==0) {
+				res[i]=1;
+				break;
+			}
+		}
+	}
+	\end{lstlisting}
+	Własności tego kodu:
+	\begin{enumerate}
+		\item Wszystkie wątki dostaną względnie równy podzbiór zbioru liczb do sprawdzenia o podobnym rozkładzie najniższych dzielników.
+		\item W kodzie tym nie zachodzą wyścigi, ponieważ każdy wątek szuka dzielników innych liczb (i ewentualnie oznacza je jako pierwsze - jest to jedyna modyfikacja współdzielonej zmiennej przez wątek).
+		\item Jedyna synchronizacja zajdzie na końcu pętli for.
+		\item False sharing może zachodzić tylko na stykach podzbiorów zbioru otwartego modyfikowanych przez 2 wątki.
+	\end{enumerate}
+
 	
 \end {enumerate}
 
@@ -170,52 +244,7 @@
 gdzie Czas użycia procesorów jest sumaryczny, a Przysp. to skrót od przyspieszenia kodu równoległego względem sekwencyjnego.
 	
 \end{flushleft}
-\begin{enumerate}
-	\item Kod pi2.c różni się od kodu sekwencyjnego dodaniem dyrektywy 
-	\begin{lstlisting}[language=C]
-		#pragma omp paralel for
-	\end{lstlisting}
-	dla pętli obliczającej pi. Zarówno $x$ jak i $sum$ są współdzielone przez wątki; błędny wynik wynika z wyścigu w dostępie do danych (który zachodzi np. jeśli jeden wątek zmieni wartość $x$-a w momencie w którym 2. wątek dodaję wartość zależną od $x$-a do sumy - jeśli 1. zapisze dane przed 2. wątkiem, ten 2. będzie korzystał z niepoprawnych danych), który zachodzi, ponieważ nie ma sychronizacji w dostępie do zmiennych współdzielonych. Sumaryczne czasy użycia procesorów są wyższe niż dla kodu sekwencyjnego, ponieważ nie zachodzi czasowa lokalność odwołań - dane muszą być zmieniane w pamięci po każdej zmianie sumy, ponadto jeśli $x$ został zmieniony pomiędzy zapisem $x$-a a zmianą sumy przez wątek, $x$ też zostanie zmieniony, choć nie powinien (jeśli algorytm ma działać poprawnie).
-	\\
-	
-	
-	\item Kod pi3.c ma lokalną dla wątku zmienną $x$ i zapis do sumy następuje z użyciem dyrektywy:
-	\begin{lstlisting}[language=C]
-		#pragma omp atomic
-	\end{lstlisting}
-		Co za tym idzie, zmienna współdzielona $sum$ jest uaktualniana w punkcie czasu przez dokładnie 1 wątek i nie zachodzi wyścig w dostępie do danych. Kod nie jest efektywny, ponieważ wykonuje $10^{9}$ razy operację założenia i zdjęcia zamka(blokady) na współdzielonej zmiennej $sum$ (przy czym najpewniej zachodzą jakieś optymalizacje, np. zamek jest zwalniany w momencie, gdy inny wątek chce zapisać do sumy, a nie bezpośrednio po jej aktualizacji - to by wyjaśniało dlaczego kod używający 2 wątków jest szybszy niż ten używający 8 wątków).\\
-	
-	\item Kod pi4.c różni się od pi3.c tym, że każdy wątek zapisuje i odczytuje lokalną dla wątku zmienną, po zakończeniu obliczeń zmienia atomowo sumę; nie zachodzi wyścig, ponieważ zmienne $x$ i $s2$ (suma dla pojedynczego wątku) są lokalne dla wątku, a zmienna $sum$ jest aktualizowana w punkcie czasu przez co najwyżej jeden wątek, ponieważ jest aktualizowana atomowo. Lokalne zmienne $x$ i $s2$ znajdują się w pamięci procesorów, które na nich operują i nie są zmieniane i odczytywane przez inne wątki, co implikuje czasową lokalność odwołań i efektywność: Sumaryczny czas użycia procesorów jest prawie taki sam jak kodu sekwencyjnego, użycie większej liczby procesorów prowadzi do przyspieszenia rzeczywistego wykonania kodu tyle razy, ile jest procesorów logicznych.\\
-	
-	\item Kod pi5.c jest podobny do kodu pi4.c, ale zamiast lokalnych zmiennych sumy jest tam:
-	\begin{lstlisting}[language=C]
-	#pragma omp parallel for private(x) reduction(+:sum)
-	\end{lstlisting}
-	co działa nieomal dokładnie w ten sam sposób co pi4.c, ponieważ dyrektywa tworzy zmienną lokalną dla wątku, która jest aktualizowana zamiast współdzielonej $sum$ w pętli i dodawana do zmiennej globalnej dla wątków dopiero po zakończeniu działania w pętli przez wątek. Co za tym idzie, czasowo ten algorytm funkcjonuje prawie tak samo jak pi4.c.\\
-	
-	\item Kod pi6.c różni się od pi4.c tym, że zamiast pojedynczych zmiennych lokalnych do sumowania została użyta tablica typu double[] taka, że każdy wątek aktualizuje tylko 1 indeks - co za tym idzie, zachodzi zjawisko false sharingu - zapisy do tablicy w 1 wątku powodują konieczność zmiany całej linii pamięci w innych pamięciach podręcznych procesorów, ponieważ te mają w swoich liniach pamięci własne kopie kolejnych wartości tej tablicy. Zmniejsza to  przestrzenną lokalność odwołań i efektywność kodu, sumaryczny czas użycia procesorów rośnie wraz ze zwiększeniem liczby wątków - a co za tym idzie, więcej razy zachodzi pobieranie linii do pamięci podręcznych procesora, ponieważ więcej wątków aktualizuje i odczytuje dane z tablicy.\\
-	
-\end{enumerate}
-	 
-\section{Długość linii}
-Kod pi7.c wypisywał najniższe wartości czasu (niecałe 5.6 s) dla 2 wątków w iteracjach $k$ takich, że\\ 
-\begin{center}
-	$k\equiv7\ \textrm{mod}\ 8$
-\end{center}
-Przy czym w $k$-tej iteracji używałem wartości tablicy o indeksach $k$ i $k+1$, a iteracje indeksowałem od 0: co za tym idzie, długość linii pamięci podręcznej procesora, którego używałem to 64 bajty, ponieważ na moim systemie rozmiar chara to 1 bajt, a:
-\begin{center}
-	$sizeof(double)==8$
-\end{center}
-Czyli rozmiar typu double to 8 rozmiarów chara czyli 8 bajtów. Co za tym idzie, rozmiar linii pamięci w moim procesorze to $8*8=64$ bajty
 
-\section{Wyjaśnienie, trudności}
-\begin{enumerate}
-	\item W 0. iteracji korzystam z indeksów (0, 1) tablicy $double[]$; w 1. z indeksów (1, 2), ... w 7. z indeksów (7, 8) i tak dalej.
-	\item W 25 pierwszych iteracjach najniższe wyniki czasowe uzyskuje w 7., 15. i 23. iteracji. Można to logicznie uzasadnić, jeśli linia pamięci podręcznej procesora ma 8 bajtów: w 0., 1., ... 6. iteracji 2 procesory nadpisują wzajemnie własne linie pamięci podręcznej, bo pobierają za każdym razem kolejne 8 doubli z tablicy $double[]$ (0...7) - co za tym idzie, zmiana w tej tablicy wymusza zmianę w linii pamięci podręcznej 2. procesora. 
-	\item W 7. iteracji 1. procesor ma w swojej linii pamięci elementy tablicy $double[]$ o indeksach 0...7, 2. procesor ma w swojej linii pamięci elementy tablicy $double[]$ o indeksach 8...15. 2 procesory nie nadpisują swoich linii pamięci, co przyspiesza działanie programu. Analogicznie, w 15. iteracji 1. procesor ma w swojej linii pamięci elementy tablicy $double[]$ o indeksach 8...15, 2. procesor - indeksy 16...23. To zjawisko powtarza się cyklicznie co 8 bajtów. Nie widzę innego sensownego uzasadnienia, dlaczego właśnie 7., 15. i 23. i kolejne co ósme iteracje dawały najlepsze rezultaty, dlatego przyjmuje powyższe rozumowanie za co najmniej zasadne, szczególnie zważając na to, że linia pamięci podręcznej mojego procesora ma 64 bajty zgodnie z jej dokumentacją.
-	\item Gdy zamiast kolejnych wartości tablicy używałem wartości tablicy o indeksach, których różnica wynosi 20 dla 2 wątków, wyniki czasowe iteracji były takie same jak dla co 8. iteracji używając kolejnych elementów tablicy, co wzmacnia tezę o tym, że przestrzenna lokalność odwołań ma wpływ na długość obliczeń i to, że linia pamięci faktycznie ma 8 bajtów.
-	\item Jedyną trudnością były zdarzające się iteracje, w których procesor delikatnie zwalniał, zapewne w wyniku procesów w tle, po wyeliminowaniu których otrzymałem powyższe rezultaty. Różnice pomiędzy 7., 15., 23. ... a pozostałymi iteracjami były rzędu 0.15-0.4 sekundy, dlatego zasadnym było albo wydłużenie pętli, albo wyeliminowanie zbędnych procesów w tle.
-\end{enumerate}
 
 
 \end{document}
