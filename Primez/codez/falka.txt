@@ -1,0 +1,1248 @@
+
+code: 03_erasto_functional_static_schedule.cpp; left, right: 2 500000000, threads: 1
+Elapsed 5.278
+Ticks 22368000000
+Instructions_Retired 5572000000
+Retired 5.1%
+Front-End_bound 0.2%
+Bront-End_bound 94.0%
+Memory_bound 
+Core_bound 16.6%
+L1_bound 21.0%
+L2_bound 0.8%
+L3_bound 0.0%
+DRAM_bound 5.7%
+DTLB_bound 28.1%
+
+
+code: 03_erasto_functional_static_schedule.cpp; left, right: 2 500000000, threads: 2
+Elapsed 5.152
+Ticks 25640000000
+Instructions_Retired 5576000000
+Retired 5.9%
+Front-End_bound 0.2%
+Bront-End_bound 93.6%
+Memory_bound 
+Core_bound 17.3%
+L1_bound 17.7%
+L2_bound 1.4%
+L3_bound 0.0%
+DRAM_bound 8.5%
+DTLB_bound 35.0%
+
+
+code: 03_erasto_functional_static_schedule.cpp; left, right: 2 500000000, threads: 4
+Elapsed 5.050
+Ticks 32304000000
+Instructions_Retired 5604000000
+Retired 3.0%
+Front-End_bound 0.2%
+Bront-End_bound 96.8%
+Memory_bound 
+Core_bound 16.4%
+L1_bound 14.9%
+L2_bound 0.7%
+L3_bound 0.0%
+DRAM_bound 10.0%
+DTLB_bound 34.9%
+
+
+code: 03_erasto_functional_static_schedule.cpp; left, right: 2 500000000, threads: 8
+Elapsed 5.015
+Ticks 36008000000
+Instructions_Retired 5608000000
+Retired 3.5%
+Front-End_bound 0.3%
+Bront-End_bound 95.9%
+Memory_bound 
+Core_bound 16.8%
+L1_bound 14.6%
+L2_bound 1.9%
+L3_bound 10.2%
+DRAM_bound 0.0%
+DTLB_bound 42.8%
+
+
+code: 03_erasto_functional_static_schedule.cpp; left, right: 2 250000000, threads: 1
+Elapsed 2.550
+Ticks 10672000000
+Instructions_Retired 2752000000
+Retired 7.5%
+Front-End_bound 0.2%
+Bront-End_bound 92.2%
+Memory_bound 
+Core_bound 17.5%
+L1_bound 22.8%
+L2_bound 0.6%
+L3_bound 0.0%
+DRAM_bound 4.5%
+DTLB_bound 27.5%
+
+
+code: 03_erasto_functional_static_schedule.cpp; left, right: 2 250000000, threads: 2
+Elapsed 2.443
+Ticks 12232000000
+Instructions_Retired 2768000000
+Retired 5.2%
+Front-End_bound 0.3%
+Bront-End_bound 94.4%
+Memory_bound 
+Core_bound 17.1%
+L1_bound 21.7%
+L2_bound 0.5%
+L3_bound 0.0%
+DRAM_bound 4.5%
+DTLB_bound 25.3%
+
+
+code: 03_erasto_functional_static_schedule.cpp; left, right: 2 250000000, threads: 4
+Elapsed 2.407
+Ticks 15152000000
+Instructions_Retired 2776000000
+Retired 3.3%
+Front-End_bound 0.4%
+Bront-End_bound 95.4%
+Memory_bound 
+Core_bound 18.9%
+L1_bound 21.7%
+L2_bound 1.2%
+L3_bound 0.0%
+DRAM_bound 5.8%
+DTLB_bound 38.2%
+
+
+code: 03_erasto_functional_static_schedule.cpp; left, right: 2 250000000, threads: 8
+Elapsed 2.515
+Ticks 17492000000
+Instructions_Retired 2800000000
+Retired 2.8%
+Front-End_bound 0.2%
+Bront-End_bound 96.7%
+Memory_bound 
+Core_bound 16.2%
+L1_bound 16.6%
+L2_bound 3.1%
+L3_bound 0.0%
+DRAM_bound 5.5%
+DTLB_bound 42.9%
+
+
+code: 03_erasto_functional_static_schedule.cpp; left, right: 250000000 500000000, threads: 1
+Elapsed 5.380
+Ticks 22560000000
+Instructions_Retired 5572000000
+Retired 5.1%
+Front-End_bound 0.1%
+Bront-End_bound 94.5%
+Memory_bound 
+Core_bound 16.4%
+L1_bound 20.1%
+L2_bound 1.0%
+L3_bound 0.0%
+DRAM_bound 6.2%
+DTLB_bound 28.1%
+
+
+code: 03_erasto_functional_static_schedule.cpp; left, right: 250000000 500000000, threads: 2
+Elapsed 5.150
+Ticks 25620000000
+Instructions_Retired 5592000000
+Retired 5.7%
+Front-End_bound 0.2%
+Bront-End_bound 93.8%
+Memory_bound 
+Core_bound 17.4%
+L1_bound 19.2%
+L2_bound 1.3%
+L3_bound 0.0%
+DRAM_bound 7.0%
+DTLB_bound 35.2%
+
+
+code: 03_erasto_functional_static_schedule.cpp; left, right: 250000000 500000000, threads: 4
+Elapsed 5.132
+Ticks 32980000000
+Instructions_Retired 5628000000
+Retired 3.0%
+Front-End_bound 0.4%
+Bront-End_bound 96.1%
+Memory_bound 
+Core_bound 16.8%
+L1_bound 13.2%
+L2_bound 0.0%
+L3_bound 0.0%
+DRAM_bound 12.6%
+DTLB_bound 43.4%
+
+
+code: 03_erasto_functional_static_schedule.cpp; left, right: 250000000 500000000, threads: 8
+Elapsed 5.063
+Ticks 36184000000
+Instructions_Retired 5616000000
+Retired 2.8%
+Front-End_bound 0.3%
+Bront-End_bound 96.9%
+Memory_bound 
+Core_bound 16.1%
+L1_bound 9.2%
+L2_bound 2.1%
+L3_bound 0.0%
+DRAM_bound 14.1%
+DTLB_bound 40.1%
+
+
+code: 04_erasto_functional_handmade_scheduling.cpp; left, right: 2 500000000, threads: 1
+Elapsed 10.093
+Ticks 42720000000
+Instructions_Retired 10624000000
+Retired 4.7%
+Front-End_bound 0.2%
+Bront-End_bound 95.0%
+Memory_bound 
+Core_bound 16.6%
+L1_bound 19.1%
+L2_bound 0.0%
+L3_bound 8.8%
+DRAM_bound 0.0%
+DTLB_bound 28.2%
+
+
+code: 04_erasto_functional_handmade_scheduling.cpp; left, right: 2 500000000, threads: 2
+Elapsed 9.642
+Ticks 55216000000
+Instructions_Retired 10800000000
+Retired 4.3%
+Front-End_bound 0.2%
+Bront-End_bound 95.4%
+Memory_bound 
+Core_bound 17.1%
+L1_bound 7.0%
+L2_bound 0.0%
+L3_bound 0.0%
+DRAM_bound 21.0%
+DTLB_bound 35.8%
+
+
+code: 04_erasto_functional_handmade_scheduling.cpp; left, right: 2 500000000, threads: 4
+Elapsed 8.163
+Ticks 98596000000
+Instructions_Retired 11196000000
+Retired 2.4%
+Front-End_bound 0.4%
+Bront-End_bound 96.9%
+Memory_bound 
+Core_bound 17.9%
+L1_bound 9.2%
+L2_bound 0.0%
+L3_bound 20.3%
+DRAM_bound 0.0%
+DTLB_bound 37.8%
+
+
+code: 04_erasto_functional_handmade_scheduling.cpp; left, right: 2 500000000, threads: 8
+Elapsed 7.901
+Ticks 117604000000
+Instructions_Retired 11020000000
+Retired 1.9%
+Front-End_bound 0.5%
+Bront-End_bound 97.7%
+Memory_bound 
+Core_bound 17.3%
+L1_bound 13.8%
+L2_bound 0.0%
+L3_bound 14.0%
+DRAM_bound 0.0%
+DTLB_bound 33.9%
+
+
+code: 04_erasto_functional_handmade_scheduling.cpp; left, right: 2 250000000, threads: 1
+Elapsed 4.736
+Ticks 19952000000
+Instructions_Retired 5240000000
+Retired 7.9%
+Front-End_bound 0.2%
+Bront-End_bound 91.7%
+Memory_bound 
+Core_bound 16.2%
+L1_bound 20.6%
+L2_bound 1.7%
+L3_bound 0.0%
+DRAM_bound 4.6%
+DTLB_bound 26.5%
+
+
+code: 04_erasto_functional_handmade_scheduling.cpp; left, right: 2 250000000, threads: 2
+Elapsed 4.370
+Ticks 25544000000
+Instructions_Retired 5316000000
+Retired 6.3%
+Front-End_bound 0.2%
+Bront-End_bound 93.3%
+Memory_bound 
+Core_bound 17.6%
+L1_bound 12.2%
+L2_bound 1.5%
+L3_bound 0.0%
+DRAM_bound 12.5%
+DTLB_bound 32.6%
+
+
+code: 04_erasto_functional_handmade_scheduling.cpp; left, right: 2 250000000, threads: 4
+Elapsed 3.812
+Ticks 43600000000
+Instructions_Retired 5544000000
+Retired 1.2%
+Front-End_bound 0.3%
+Bront-End_bound 98.4%
+Memory_bound 
+Core_bound 18.4%
+L1_bound 22.7%
+L2_bound 0.9%
+L3_bound 0.0%
+DRAM_bound 6.4%
+DTLB_bound 30.1%
+
+
+code: 04_erasto_functional_handmade_scheduling.cpp; left, right: 2 250000000, threads: 8
+Elapsed 4.061
+Ticks 47280000000
+Instructions_Retired 5400000000
+Retired 1.9%
+Front-End_bound 0.5%
+Bront-End_bound 97.5%
+Memory_bound 
+Core_bound 16.9%
+L1_bound 18.0%
+L2_bound 0.6%
+L3_bound 10.8%
+DRAM_bound 0.0%
+DTLB_bound 33.0%
+
+
+code: 04_erasto_functional_handmade_scheduling.cpp; left, right: 250000000 500000000, threads: 1
+Elapsed 10.617
+Ticks 43808000000
+Instructions_Retired 10632000000
+Retired 5.3%
+Front-End_bound 0.2%
+Bront-End_bound 94.4%
+Memory_bound 
+Core_bound 16.2%
+L1_bound 16.8%
+L2_bound 0.1%
+L3_bound 10.8%
+DRAM_bound 0.0%
+DTLB_bound 30.7%
+
+
+code: 04_erasto_functional_handmade_scheduling.cpp; left, right: 250000000 500000000, threads: 2
+Elapsed 10.419
+Ticks 57636000000
+Instructions_Retired 10816000000
+Retired 3.9%
+Front-End_bound 0.3%
+Bront-End_bound 95.6%
+Memory_bound 
+Core_bound 16.7%
+L1_bound 5.3%
+L2_bound 0.2%
+L3_bound 1.2%
+DRAM_bound 21.5%
+DTLB_bound 38.3%
+
+
+code: 04_erasto_functional_handmade_scheduling.cpp; left, right: 250000000 500000000, threads: 4
+Elapsed 8.401
+Ticks 95716000000
+Instructions_Retired 11272000000
+Retired 3.2%
+Front-End_bound 0.3%
+Bront-End_bound 96.2%
+Memory_bound 
+Core_bound 17.6%
+L1_bound 13.3%
+L2_bound 0.0%
+L3_bound 1.8%
+DRAM_bound 12.4%
+DTLB_bound 38.4%
+
+
+code: 04_erasto_functional_handmade_scheduling.cpp; left, right: 250000000 500000000, threads: 8
+Elapsed 8.664
+Ticks 106484000000
+Instructions_Retired 10860000000
+Retired 2.0%
+Front-End_bound 0.6%
+Bront-End_bound 97.2%
+Memory_bound 
+Core_bound 17.7%
+L1_bound 6.3%
+L2_bound 0.7%
+L3_bound 21.2%
+DRAM_bound 0.0%
+DTLB_bound 36.3%
+
+
+code: 05_erasto_functional_dynamic_schedule.cpp; left, right: 2 500000000, threads: 1
+Elapsed 3.795
+Ticks 59772000000
+Instructions_Retired 6104000000
+Retired 3.0%
+Front-End_bound 0.5%
+Bront-End_bound 96.3%
+Memory_bound 
+Core_bound 18.6%
+L1_bound 18.4%
+L2_bound 0.0%
+L3_bound 0.0%
+DRAM_bound 9.9%
+DTLB_bound 33.5%
+
+
+code: 05_erasto_functional_dynamic_schedule.cpp; left, right: 2 500000000, threads: 2
+Elapsed 3.704
+Ticks 58132000000
+Instructions_Retired 6148000000
+Retired 3.2%
+Front-End_bound 0.7%
+Bront-End_bound 95.7%
+Memory_bound 
+Core_bound 19.4%
+L1_bound 12.9%
+L2_bound 0.0%
+L3_bound 19.1%
+DRAM_bound 0.0%
+DTLB_bound 37.7%
+
+
+code: 05_erasto_functional_dynamic_schedule.cpp; left, right: 2 500000000, threads: 4
+Elapsed 3.360
+Ticks 53512000000
+Instructions_Retired 6100000000
+Retired 3.5%
+Front-End_bound 0.4%
+Bront-End_bound 95.8%
+Memory_bound 
+Core_bound 16.7%
+L1_bound 20.5%
+L2_bound 1.7%
+L3_bound 4.6%
+DRAM_bound 0.0%
+DTLB_bound 40.4%
+
+
+code: 05_erasto_functional_dynamic_schedule.cpp; left, right: 2 500000000, threads: 8
+Elapsed 3.208
+Ticks 51536000000
+Instructions_Retired 6068000000
+Retired 3.6%
+Front-End_bound 0.4%
+Bront-End_bound 95.8%
+Memory_bound 
+Core_bound 17.8%
+L1_bound 13.9%
+L2_bound 0.0%
+L3_bound 0.0%
+DRAM_bound 14.5%
+DTLB_bound 38.7%
+
+
+code: 05_erasto_functional_dynamic_schedule.cpp; left, right: 2 250000000, threads: 1
+Elapsed 1.469
+Ticks 23680000000
+Instructions_Retired 3028000000
+Retired 6.2%
+Front-End_bound 0.5%
+Bront-End_bound 92.6%
+Memory_bound 
+Core_bound 17.8%
+L1_bound 5.6%
+L2_bound 1.9%
+L3_bound 0.0%
+DRAM_bound 15.6%
+DTLB_bound 41.7%
+
+
+code: 05_erasto_functional_dynamic_schedule.cpp; left, right: 2 250000000, threads: 2
+Elapsed 2.002
+Ticks 28084000000
+Instructions_Retired 2968000000
+Retired 5.1%
+Front-End_bound 0.6%
+Bront-End_bound 93.9%
+Memory_bound 
+Core_bound 18.1%
+L1_bound 16.1%
+L2_bound 0.6%
+L3_bound 8.0%
+DRAM_bound 0.0%
+DTLB_bound 31.5%
+
+
+code: 05_erasto_functional_dynamic_schedule.cpp; left, right: 2 250000000, threads: 4
+Elapsed 1.469
+Ticks 23192000000
+Instructions_Retired 3008000000
+Retired 6.3%
+Front-End_bound 0.5%
+Bront-End_bound 92.5%
+Memory_bound 
+Core_bound 17.7%
+L1_bound 6.0%
+L2_bound 5.6%
+L3_bound 0.0%
+DRAM_bound 9.5%
+DTLB_bound 42.8%
+
+
+code: 05_erasto_functional_dynamic_schedule.cpp; left, right: 2 250000000, threads: 8
+Elapsed 1.689
+Ticks 26848000000
+Instructions_Retired 3040000000
+Retired 5.2%
+Front-End_bound 0.5%
+Bront-End_bound 93.6%
+Memory_bound 
+Core_bound 17.4%
+L1_bound 16.5%
+L2_bound 0.0%
+L3_bound 0.0%
+DRAM_bound 9.0%
+DTLB_bound 24.5%
+
+
+code: 05_erasto_functional_dynamic_schedule.cpp; left, right: 250000000 500000000, threads: 1
+Elapsed 3.271
+Ticks 52396000000
+Instructions_Retired 6088000000
+Retired 3.6%
+Front-End_bound 0.6%
+Bront-End_bound 95.6%
+Memory_bound 
+Core_bound 17.7%
+L1_bound 9.7%
+L2_bound 0.0%
+L3_bound 0.0%
+DRAM_bound 19.1%
+DTLB_bound 44.5%
+
+
+code: 05_erasto_functional_dynamic_schedule.cpp; left, right: 250000000 500000000, threads: 2
+Elapsed 3.423
+Ticks 54532000000
+Instructions_Retired 6104000000
+Retired 3.2%
+Front-End_bound 0.6%
+Bront-End_bound 95.9%
+Memory_bound 
+Core_bound 19.3%
+L1_bound 10.5%
+L2_bound 0.8%
+L3_bound 0.0%
+DRAM_bound 16.6%
+DTLB_bound 38.8%
+
+
+code: 05_erasto_functional_dynamic_schedule.cpp; left, right: 250000000 500000000, threads: 4
+Elapsed 3.487
+Ticks 55628000000
+Instructions_Retired 6052000000
+Retired 3.2%
+Front-End_bound 0.5%
+Bront-End_bound 96.0%
+Memory_bound 
+Core_bound 18.5%
+L1_bound 19.4%
+L2_bound 1.1%
+L3_bound 0.0%
+DRAM_bound 5.9%
+DTLB_bound 34.2%
+
+
+code: 05_erasto_functional_dynamic_schedule.cpp; left, right: 250000000 500000000, threads: 8
+Elapsed 3.298
+Ticks 51060000000
+Instructions_Retired 6148000000
+Retired 3.4%
+Front-End_bound 0.6%
+Bront-End_bound 95.6%
+Memory_bound 
+Core_bound 18.5%
+L1_bound 7.9%
+L2_bound 0.0%
+L3_bound 0.0%
+DRAM_bound 19.6%
+DTLB_bound 41.7%
+
+
+code: 07_erasto_domain.cpp; left, right: 2 500000000, threads: 1
+Elapsed 5.316
+Ticks 22452000000
+Instructions_Retired 5572000000
+Retired 6.2%
+Front-End_bound 0.1%
+Bront-End_bound 93.4%
+Memory_bound 
+Core_bound 15.9%
+L1_bound 19.5%
+L2_bound 0.8%
+L3_bound 0.0%
+DRAM_bound 6.6%
+DTLB_bound 29.2%
+
+
+code: 07_erasto_domain.cpp; left, right: 2 500000000, threads: 2
+Elapsed 4.499
+Ticks 37880000000
+Instructions_Retired 5604000000
+Retired 4.0%
+Front-End_bound 0.2%
+Bront-End_bound 95.6%
+Memory_bound 
+Core_bound 17.2%
+L1_bound 22.1%
+L2_bound 0.0%
+L3_bound 0.0%
+DRAM_bound 5.2%
+DTLB_bound 30.8%
+
+
+code: 07_erasto_domain.cpp; left, right: 2 500000000, threads: 4
+Elapsed 4.312
+Ticks 69384000000
+Instructions_Retired 5688000000
+Retired 1.7%
+Front-End_bound 0.3%
+Bront-End_bound 98.0%
+Memory_bound 
+Core_bound 17.6%
+L1_bound 23.3%
+L2_bound 0.0%
+L3_bound 0.0%
+DRAM_bound 4.8%
+DTLB_bound 31.0%
+
+
+code: 07_erasto_domain.cpp; left, right: 2 500000000, threads: 8
+Elapsed 4.300
+Ticks 69180000000
+Instructions_Retired 5716000000
+Retired 2.3%
+Front-End_bound 0.3%
+Bront-End_bound 97.0%
+Memory_bound 
+Core_bound 18.6%
+L1_bound 21.6%
+L2_bound 0.0%
+L3_bound 8.1%
+DRAM_bound 0.0%
+DTLB_bound 32.5%
+
+
+code: 07_erasto_domain.cpp; left, right: 2 250000000, threads: 1
+Elapsed 2.652
+Ticks 10932000000
+Instructions_Retired 2744000000
+Retired 6.6%
+Front-End_bound 0.4%
+Bront-End_bound 92.6%
+Memory_bound 
+Core_bound 16.4%
+L1_bound 19.3%
+L2_bound 0.4%
+L3_bound 0.0%
+DRAM_bound 5.2%
+DTLB_bound 29.2%
+
+
+code: 07_erasto_domain.cpp; left, right: 2 250000000, threads: 2
+Elapsed 2.215
+Ticks 18284000000
+Instructions_Retired 2752000000
+Retired 4.4%
+Front-End_bound 0.3%
+Bront-End_bound 94.4%
+Memory_bound 
+Core_bound 18.2%
+L1_bound 23.4%
+L2_bound 0.0%
+L3_bound 0.0%
+DRAM_bound 5.4%
+DTLB_bound 25.3%
+
+
+code: 07_erasto_domain.cpp; left, right: 2 250000000, threads: 4
+Elapsed 2.070
+Ticks 33096000000
+Instructions_Retired 2800000000
+Retired 1.7%
+Front-End_bound 0.3%
+Bront-End_bound 98.0%
+Memory_bound 
+Core_bound 15.3%
+L1_bound 22.4%
+L2_bound 0.0%
+L3_bound 0.0%
+DRAM_bound 3.2%
+DTLB_bound 31.4%
+
+
+code: 07_erasto_domain.cpp; left, right: 2 250000000, threads: 8
+Elapsed 2.090
+Ticks 32840000000
+Instructions_Retired 2784000000
+Retired 1.7%
+Front-End_bound 0.5%
+Bront-End_bound 97.6%
+Memory_bound 
+Core_bound 17.5%
+L1_bound 18.8%
+L2_bound 0.0%
+L3_bound 0.0%
+DRAM_bound 6.0%
+DTLB_bound 31.8%
+
+
+code: 07_erasto_domain.cpp; left, right: 250000000 500000000, threads: 1
+Elapsed 5.203
+Ticks 22052000000
+Instructions_Retired 5576000000
+Retired 5.3%
+Front-End_bound 0.2%
+Bront-End_bound 94.3%
+Memory_bound 
+Core_bound 16.8%
+L1_bound 20.4%
+L2_bound 0.0%
+L3_bound 0.0%
+DRAM_bound 9.6%
+DTLB_bound 31.1%
+
+
+code: 07_erasto_domain.cpp; left, right: 250000000 500000000, threads: 2
+Elapsed 4.460
+Ticks 37596000000
+Instructions_Retired 5580000000
+Retired 4.0%
+Front-End_bound 0.2%
+Bront-End_bound 95.6%
+Memory_bound 
+Core_bound 17.3%
+L1_bound 21.8%
+L2_bound 0.4%
+L3_bound 0.0%
+DRAM_bound 4.5%
+DTLB_bound 28.9%
+
+
+code: 07_erasto_domain.cpp; left, right: 250000000 500000000, threads: 4
+Elapsed 4.344
+Ticks 67516000000
+Instructions_Retired 5664000000
+Retired 2.0%
+Front-End_bound 0.3%
+Bront-End_bound 97.3%
+Memory_bound 
+Core_bound 18.1%
+L1_bound 22.5%
+L2_bound 0.0%
+L3_bound 0.0%
+DRAM_bound 4.7%
+DTLB_bound 30.4%
+
+
+code: 07_erasto_domain.cpp; left, right: 250000000 500000000, threads: 8
+Elapsed 4.303
+Ticks 67228000000
+Instructions_Retired 5632000000
+Retired 2.2%
+Front-End_bound 0.3%
+Bront-End_bound 97.4%
+Memory_bound 
+Core_bound 18.2%
+L1_bound 20.3%
+L2_bound 0.0%
+L3_bound 0.0%
+DRAM_bound 9.8%
+DTLB_bound 34.3%
+
+
+code: 08_sqrt_functional.cpp; left, right: 2 5000000, threads: 1
+Elapsed 1.575
+Ticks 6676000000
+Instructions_Retired 7884000000
+Retired 40.8%
+Front-End_bound 43.3%
+Bront-End_bound 15.6%
+Memory_bound 
+Core_bound 6.1%
+L1_bound 26.2%
+L2_bound 0.3%
+L3_bound 0.0%
+DRAM_bound 0.0%
+DTLB_bound 0.0%
+
+
+code: 08_sqrt_functional.cpp; left, right: 2 5000000, threads: 2
+Elapsed 4.568
+Ticks 24440000000
+Instructions_Retired 28984000000
+Retired 44.4%
+Front-End_bound 45.4%
+Bront-End_bound 10.0%
+Memory_bound 
+Core_bound 3.9%
+L1_bound 28.6%
+L2_bound 0.0%
+L3_bound 0.0%
+DRAM_bound 0.1%
+DTLB_bound 0.0%
+
+
+code: 08_sqrt_functional.cpp; left, right: 2 5000000, threads: 4
+Elapsed 4.458
+Ticks 42520000000
+Instructions_Retired 50464000000
+Retired 44.6%
+Front-End_bound 41.4%
+Bront-End_bound 13.7%
+Memory_bound 
+Core_bound 6.2%
+L1_bound 25.3%
+L2_bound 0.0%
+L3_bound 0.0%
+DRAM_bound 0.0%
+DTLB_bound 0.0%
+
+
+code: 08_sqrt_functional.cpp; left, right: 2 5000000, threads: 8
+Elapsed 3.597
+Ticks 55172000000
+Instructions_Retired 65344000000
+Retired 44.4%
+Front-End_bound 42.5%
+Bront-End_bound 12.6%
+Memory_bound 
+Core_bound 5.5%
+L1_bound 25.8%
+L2_bound 0.0%
+L3_bound 0.0%
+DRAM_bound 0.0%
+DTLB_bound 0.0%
+
+
+code: 08_sqrt_functional.cpp; left, right: 2 2500000, threads: 1
+Elapsed 0.602
+Ticks 2520000000
+Instructions_Retired 2964000000
+Retired 44.2%
+Front-End_bound 45.9%
+Bront-End_bound 9.3%
+Memory_bound 
+Core_bound 3.7%
+L1_bound 29.5%
+L2_bound 0.0%
+L3_bound 0.0%
+DRAM_bound 0.8%
+DTLB_bound 0.0%
+
+
+code: 08_sqrt_functional.cpp; left, right: 2 2500000, threads: 2
+Elapsed 1.618
+Ticks 8772000000
+Instructions_Retired 10384000000
+Retired 45.0%
+Front-End_bound 36.2%
+Bront-End_bound 18.4%
+Memory_bound 
+Core_bound 9.5%
+L1_bound 22.1%
+L2_bound 0.0%
+L3_bound 0.0%
+DRAM_bound 0.0%
+DTLB_bound 0.0%
+
+
+code: 08_sqrt_functional.cpp; left, right: 2 2500000, threads: 4
+Elapsed 1.576
+Ticks 15188000000
+Instructions_Retired 17928000000
+Retired 42.3%
+Front-End_bound 41.3%
+Bront-End_bound 16.2%
+Memory_bound 
+Core_bound 6.8%
+L1_bound 25.5%
+L2_bound 0.0%
+L3_bound 0.0%
+DRAM_bound 0.1%
+DTLB_bound 0.0%
+
+
+code: 08_sqrt_functional.cpp; left, right: 2 2500000, threads: 8
+Elapsed 1.369
+Ticks 19648000000
+Instructions_Retired 23176000000
+Retired 45.8%
+Front-End_bound 39.8%
+Bront-End_bound 14.1%
+Memory_bound 
+Core_bound 6.8%
+L1_bound 24.3%
+L2_bound 0.0%
+L3_bound 0.0%
+DRAM_bound 0.1%
+DTLB_bound 0.0%
+
+
+code: 08_sqrt_functional.cpp; left, right: 2500000 5000000, threads: 1
+Elapsed 1.574
+Ticks 6676000000
+Instructions_Retired 7884000000
+Retired 39.7%
+Front-End_bound 41.8%
+Bront-End_bound 18.0%
+Memory_bound 
+Core_bound 7.2%
+L1_bound 25.6%
+L2_bound 0.0%
+L3_bound 0.0%
+DRAM_bound 0.0%
+DTLB_bound 0.0%
+
+
+code: 08_sqrt_functional.cpp; left, right: 2500000 5000000, threads: 2
+Elapsed 4.564
+Ticks 24452000000
+Instructions_Retired 28980000000
+Retired 44.2%
+Front-End_bound 44.3%
+Bront-End_bound 11.3%
+Memory_bound 
+Core_bound 4.7%
+L1_bound 27.1%
+L2_bound 0.0%
+L3_bound 0.0%
+DRAM_bound 0.0%
+DTLB_bound 0.0%
+
+
+code: 08_sqrt_functional.cpp; left, right: 2500000 5000000, threads: 4
+Elapsed 4.445
+Ticks 42524000000
+Instructions_Retired 50436000000
+Retired 44.0%
+Front-End_bound 41.7%
+Bront-End_bound 14.0%
+Memory_bound 
+Core_bound 6.2%
+L1_bound 25.5%
+L2_bound 0.0%
+L3_bound 0.0%
+DRAM_bound 0.0%
+DTLB_bound 0.0%
+
+
+code: 08_sqrt_functional.cpp; left, right: 2500000 5000000, threads: 8
+Elapsed 3.882
+Ticks 55128000000
+Instructions_Retired 65348000000
+Retired 44.2%
+Front-End_bound 43.0%
+Bront-End_bound 12.1%
+Memory_bound 
+Core_bound 5.1%
+L1_bound 26.3%
+L2_bound 0.0%
+L3_bound 0.0%
+DRAM_bound 0.0%
+DTLB_bound 0.0%
+
+
+code: 09_sqrt_domain.cpp; left, right: 2 5000000, threads: 1
+Elapsed 1.414
+Ticks 5988000000
+Instructions_Retired 6568000000
+Retired 46.5%
+Front-End_bound 36.2%
+Bront-End_bound 17.0%
+Memory_bound 
+Core_bound 6.5%
+L1_bound 23.0%
+L2_bound 0.0%
+L3_bound 0.0%
+DRAM_bound 0.0%
+DTLB_bound 0.0%
+
+
+code: 09_sqrt_domain.cpp; left, right: 2 5000000, threads: 2
+Elapsed 0.881
+Ticks 5992000000
+Instructions_Retired 6576000000
+Retired 46.4%
+Front-End_bound 34.4%
+Bront-End_bound 18.9%
+Memory_bound 
+Core_bound 7.1%
+L1_bound 23.3%
+L2_bound 0.0%
+L3_bound 0.0%
+DRAM_bound 0.0%
+DTLB_bound 0.0%
+
+
+code: 09_sqrt_domain.cpp; left, right: 2 5000000, threads: 4
+Elapsed 0.485
+Ticks 5784000000
+Instructions_Retired 6352000000
+Retired 36.6%
+Front-End_bound 21.2%
+Bront-End_bound 40.9%
+Memory_bound 
+Core_bound 23.4%
+L1_bound 13.6%
+L2_bound 0.0%
+L3_bound 0.0%
+DRAM_bound 0.0%
+DTLB_bound 0.0%
+
+
+code: 09_sqrt_domain.cpp; left, right: 2 5000000, threads: 8
+Elapsed 0.405
+Ticks 5800000000
+Instructions_Retired 6368000000
+Retired 35.7%
+Front-End_bound 32.6%
+Bront-End_bound 30.0%
+Memory_bound 
+Core_bound 10.1%
+L1_bound 25.3%
+L2_bound 0.0%
+L3_bound 0.0%
+DRAM_bound 0.0%
+DTLB_bound 0.0%
+
+
+code: 09_sqrt_domain.cpp; left, right: 2 2500000, threads: 1
+Elapsed 0.539
+Ticks 2256000000
+Instructions_Retired 2472000000
+Retired 46.4%
+Front-End_bound 22.6%
+Bront-End_bound 30.4%
+Memory_bound 
+Core_bound 18.1%
+L1_bound 13.5%
+L2_bound 0.8%
+L3_bound 0.0%
+DRAM_bound 0.0%
+DTLB_bound 0.0%
+
+
+code: 09_sqrt_domain.cpp; left, right: 2 2500000, threads: 2
+Elapsed 0.340
+Ticks 2260000000
+Instructions_Retired 2480000000
+Retired 44.1%
+Front-End_bound 17.1%
+Bront-End_bound 37.5%
+Memory_bound 
+Core_bound 28.2%
+L1_bound 11.0%
+L2_bound 0.0%
+L3_bound 0.0%
+DRAM_bound 0.0%
+DTLB_bound 0.0%
+
+
+code: 09_sqrt_domain.cpp; left, right: 2 2500000, threads: 4
+Elapsed 0.185
+Ticks 1680000000
+Instructions_Retired 1824000000
+Retired 44.0%
+Front-End_bound 0.0%
+Bront-End_bound 55.0%
+Memory_bound 
+Core_bound 55.0%
+L1_bound 0.0%
+L2_bound 0.0%
+L3_bound 0.0%
+DRAM_bound 0.0%
+DTLB_bound 0.0%
+
+
+code: 09_sqrt_domain.cpp; left, right: 2 2500000, threads: 8
+Elapsed 0.150
+Ticks 1756000000
+Instructions_Retired 1928000000
+Retired 100.0%
+Front-End_bound 0.0%
+Bront-End_bound 0.0%
+Memory_bound 
+Core_bound 0.0%
+L1_bound 0.0%
+L2_bound 0.0%
+L3_bound 0.0%
+DRAM_bound 0.0%
+DTLB_bound 0.0%
+
+
+code: 09_sqrt_domain.cpp; left, right: 2500000 5000000, threads: 1
+Elapsed 1.414
+Ticks 5988000000
+Instructions_Retired 6572000000
+Retired 46.5%
+Front-End_bound 36.1%
+Bront-End_bound 16.9%
+Memory_bound 
+Core_bound 6.4%
+L1_bound 23.0%
+L2_bound 0.0%
+L3_bound 0.0%
+DRAM_bound 0.0%
+DTLB_bound 0.0%
+
+
+code: 09_sqrt_domain.cpp; left, right: 2500000 5000000, threads: 2
+Elapsed 0.883
+Ticks 5996000000
+Instructions_Retired 6572000000
+Retired 59.4%
+Front-End_bound 51.4%
+Bront-End_bound 0.0%
+Memory_bound 
+Core_bound 0.0%
+L1_bound 37.0%
+L2_bound 0.0%
+L3_bound 0.0%
+DRAM_bound 0.0%
+DTLB_bound 0.0%
+
+
+code: 09_sqrt_domain.cpp; left, right: 2500000 5000000, threads: 4
+Elapsed 0.494
+Ticks 6016000000
+Instructions_Retired 6584000000
+Retired 52.1%
+Front-End_bound 22.5%
+Bront-End_bound 24.3%
+Memory_bound 
+Core_bound 15.4%
+L1_bound 14.5%
+L2_bound 0.0%
+L3_bound 0.0%
+DRAM_bound 0.0%
+DTLB_bound 0.0%
+
+
+code: 09_sqrt_domain.cpp; left, right: 2500000 5000000, threads: 8
+Elapsed 0.400
+Ticks 5976000000
+Instructions_Retired 6564000000
+Retired 57.8%
+Front-End_bound 34.8%
+Bront-End_bound 4.2%
+Memory_bound 
+Core_bound 2.4%
+L1_bound 21.4%
+L2_bound 0.0%
+L3_bound 0.0%
+DRAM_bound 0.0%
+DTLB_bound 0.0%
+
+
+code: 02_most_primitive.cpp; left, right: 2 5000000, threads: 1
+Elapsed 1.419
+Ticks 6004000000
+Instructions_Retired 6564000000
+Retired 47.3%
+Front-End_bound 36.8%
+Bront-End_bound 15.2%
+Memory_bound 
+Core_bound 5.9%
+L1_bound 23.4%
+L2_bound 0.0%
+L3_bound 0.0%
+DRAM_bound 0.0%
+DTLB_bound 0.0%
+
+
+code: 02_most_primitive.cpp; left, right: 2 2500000, threads: 1
+Elapsed 0.538
+Ticks 2264000000
+Instructions_Retired 2468000000
+Retired 49.3%
+Front-End_bound 24.8%
+Bront-End_bound 25.0%
+Memory_bound 
+Core_bound 14.9%
+L1_bound 15.6%
+L2_bound 0.0%
+L3_bound 0.0%
+DRAM_bound 0.0%
+DTLB_bound 0.0%
+
+
+code: 02_most_primitive.cpp; left, right: 2500000 5000000, threads: 1
+Elapsed 1.418
+Ticks 6004000000
+Instructions_Retired 6556000000
+Retired 48.3%
+Front-End_bound 37.6%
+Bront-End_bound 13.6%
+Memory_bound 
+Core_bound 5.2%
+L1_bound 24.1%
+L2_bound 0.0%
+L3_bound 0.0%
+DRAM_bound 0.0%
+DTLB_bound 0.0%
+
+
+code: 01_erasto_single.cpp; left, right: 2 500000000, threads: 1
+Elapsed 4.913
+Ticks 20860000000
+Instructions_Retired 5464000000
+Retired 5.4%
+Front-End_bound 0.2%
+Bront-End_bound 94.2%
+Memory_bound 
+Core_bound 17.0%
+L1_bound 22.2%
+L2_bound 0.4%
+L3_bound 0.0%
+DRAM_bound 6.1%
+DTLB_bound 28.9%
+
+
+code: 01_erasto_single.cpp; left, right: 2 250000000, threads: 1
+Elapsed 2.378
+Ticks 9972000000
+Instructions_Retired 2692000000
+Retired 7.4%
+Front-End_bound 0.2%
+Bront-End_bound 92.1%
+Memory_bound 
+Core_bound 16.5%
+L1_bound 20.7%
+L2_bound 2.2%
+L3_bound 0.0%
+DRAM_bound 2.8%
+DTLB_bound 28.3%
+
+
+code: 01_erasto_single.cpp; left, right: 250000000 500000000, threads: 1
+Elapsed 4.986
+Ticks 20936000000
+Instructions_Retired 5492000000
+Retired 6.4%
+Front-End_bound 1.1%
+Bront-End_bound 92.7%
+Memory_bound 
+Core_bound 15.5%
+L1_bound 21.3%
+L2_bound 0.0%
+L3_bound 0.0%
+DRAM_bound 6.9%
+DTLB_bound 26.6%
+
