@@ -36,8 +36,8 @@ void func_par_erasto(bool *res, int a, int n, int thr){
 				i=neoprimez[ji];
 				if (dp[thnum][i]==0) dp[thnum][i]=max(modal(left, i), modal(a, i));
 				for (j=dp[thnum][i]; j<=right;j+=i){
-					p[j]=1;	
 					if (j>=curfun) break;
+					p[j]=1;	
 				}
 				if (j>right) finished++;
 				dp[thnum][i]=j;
