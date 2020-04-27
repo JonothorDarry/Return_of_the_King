@@ -1,4 +1,5 @@
 import re
+import sys
 
 def p1(st):
     if st=='_':
@@ -25,6 +26,7 @@ reduct={
         'L3_bound':'L3',
         'DRAM_bound':'DRAMB',
         'DTLB_bound':'DTLBB',
+        'Effective_Cpu':'ECPU',
 }
 
 codename={
@@ -32,15 +34,19 @@ codename={
         '02_most_primitive.cpp':'02_ss',
         '03_erasto_functional_static_schedule.cpp':'03_efss',
         '04_erasto_functional_handmade_scheduling.cpp':'04_efhs',
-        '09_sqrt_domain.cpp':'09_sd',
-        '08_sqrt_functional.cpp':'08_sf',
         '05_erasto_functional_dynamic_schedule.cpp':'05_efds',
+        '09_sqrt_domain.cpp':'09_sd',
         '07_erasto_domain.cpp':'09_ed',
+        '08_erasto_super_domain.cpp':'08_esd'
 }
+if (len(sys.argv)>1):
+    tfile=sys.argv[1]
+else:
+    tfile='falka.txt'
 
 
 lees=[]
-with open("falka.txt", "r") as falk:
+with open(tfile, "r") as falk:
     for ln in falk:
         s=re.split(' ', ln);
 

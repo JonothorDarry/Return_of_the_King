@@ -18,6 +18,7 @@ shower(){
 	l3bound=$(parser 'L3 Bound:')
 	drambound=$(parser 'DRAM Bound:')
 	dtlbbound=$(parser 'DTLB Store Overhead:')
+	ecpu=$(parser 'Effective CPU Utilization:')
 
 
 	echo "Elapsed $elapsed"
@@ -34,10 +35,11 @@ shower(){
         echo "L3_bound $l3bound"
         echo "DRAM_bound $drambound"
         echo "DTLB_bound $dtlbbound"
+	echo "Effective_Cpu $ecpu"
 }
 
 process(){
-	declare -a minmax=("$Mn $Mx" "$Mn $Md" "$Md $Mx")
+	declare -a minmax=("$Mn $Mx") # "$Mn $Md" "$Md $Mx")
 	for code in "${codez[@]}"
 	do
 		for mm in "${minmax[@]}"
@@ -48,7 +50,7 @@ process(){
 				echo "code: $code"
 				echo "left_right: $mm"
 				echo "threads: $zz"
-				data=$(g++ -Ofast -fopenmp $code && sudo ./vtune 2>/dev/null -collect uarch-exploration ./a.out $mm $zz)
+				data=$(icpc -fopenmp $code && sudo ./vtune 2>/dev/null -collect uarch-exploration ./a.out $mm $zz)
 				shower
 				echo ''
 			done
@@ -58,24 +60,31 @@ process(){
 }
 
 
-Mx=500000000
-Md=250000000
+Mx=1000000000
+Md=500000000
 Mn=2
-
-declare -a codez=("03_erasto_functional_static_schedule.cpp" "04_erasto_functional_handmade_scheduling.cpp" "05_erasto_functional_dynamic_schedule.cpp" "07_erasto_domain.cpp")
-declare -a threadz=("1" "2" "4" "8")
+source /opt/intel/bin/compilervars.sh intel64
+#"09_sqrt_domain.cpp"
+declare -a codez=("03_erasto_functional_static_schedule.cpp" "04_erasto_functional_handmade_scheduling.cpp" "05_erasto_functional_dynamic_schedule.cpp")
+declare -a threadz=("4")
 process "$codez" "$threadz"
 
-Mx=5000000
-Md=2500000
-declare -a codez=("08_sqrt_functional.cpp" "09_sqrt_domain.cpp")
+declare -a codez=("08_erasto_super_domain.cpp"  "07_erasto_domain.cpp")
+process "$codez" "$threadz"
+
+
+
+declare -a codez=("08_erasto_super_domain.cpp"  "07_erasto_domain.cpp")
+declare -a threadz=("1" "2" "4")
+process "$codez" "$threadz"
+Mx=10000000
 process "$codez" "$threadz"
 
 declare -a codez=("02_most_primitive.cpp")
 declare -a threadz=("1")
 process "$codez" "$threadz"
 
-Mx=500000000
-Md=250000000
+Mx=1000000000
+Md=500000000
 declare -a codez=("01_erasto_single.cpp")
 process "$codez" "$threadz"
