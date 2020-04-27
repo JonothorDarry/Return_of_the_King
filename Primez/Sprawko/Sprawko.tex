@@ -1,7 +1,7 @@
 \documentclass[12pt]{article}
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
-\usepackage{lscape} 
+\usepackage{pdflscape} 
 \usepackage{lmodern}
 \usepackage[svgnames]{xcolor}
 \usepackage[a4paper,bindingoffset=0.2in,%
@@ -61,7 +61,7 @@
 \section{Wykorzystywany system równoległy}
 \begin {enumerate}
 	\item Kompilator: icpc (Intel C++ compiler) 19.1.1.217
-	\item Do zdobycia informacji na temat przetwarzania używałem Intel VTune'a
+	\item Do zebrania informacji na temat przetwarzania użyto Intel VTune'a
 	\item System operacyjny: Ubuntu 18.04
 	\item Procesor Intel(R) Core(TM) i7-4790K CPU @ 4.00GHz - 4 rdzenie, 2 wątki na 1 rdzeń: 8 procesorów logicznych i 4 fizyczne. Do pomiarów został wyłączony HyperThreading, co za tym idzie używałem co najwyżej 4 procesorów logicznych. Linia pamięci podręcznej procesora ma 64 bajty. Pamięc cache ma: 
 	\begin{enumerate}
@@ -79,12 +79,12 @@
 	\item \textbf{Domknięta część sita} to taka część elementów zrównoleglonego sita, w której liczby oznaczono jako pierwsze/złożone i do której nie zostanie dokonany zapis w trakcie wykonywania sita. W szczególności, aby wypełnić równolegle sito o rozmiarze \(n\), jego część domknięta musi zawierać wszystkie liczby z przedziału \(<0;\lfloor\sqrt{n}\rfloor>\).
 	\item \textbf{Otwarta część sita} to taka część elementów zrównoleglonego sita, w której liczby nadal mogą zostać odznaczone jako złożone.
 	\item W kodach jeśli res[\(i\)]==1 to \(i\) jest liczbą złożoną.
-	\item Część kodów w sprawozdaniu została uproszczona względem oryginału - tutaj moim celem jest pokazanie koncepcji.
+	\item Część kodów w sprawozdaniu została uproszczona względem oryginału - celem jest pokazanie koncepcji.
 \end{enumerate}
 
 \section{Użyte kody}
 \begin {enumerate}
-	\item 01\_erasto\_single.cpp - Kod sekwencyjny, standardowe sito erastotenesa działające w\\ \(O(r*loglog(r))\), z podwójną optymalizacją: do odznaczania liczb złożonych używane są tylko liczby pierwsze (np. nie używam 6, aby odznaczyć 36, 42.. etc., ponieważ te zostały już odznaczone przez każdy pierwszy dzielnik 6 - czyli 2 i 3), ponadto odsiew rozpoczyna się od kwadratu danej liczby - jest to poprawne, ponieważ jeśli liczba \(x\) nie jest pierwsza to jej najniższy dzielnik \(d>1\) spełnia \(d\le \sqrt{x}\).
+	\item \texttt{01\_erasto\_single.cpp} - Kod sekwencyjny, standardowe sito Erastotenesa działające w\\ \(O(r*\log \log(r))\), z podwójną optymalizacją: do odznaczania liczb złożonych używane są tylko liczby pierwsze (np. nie używa 6, aby odznaczyć 36, 42.. etc., ponieważ te zostały już odznaczone przez każdy pierwszy dzielnik 6 - czyli 2 i 3), ponadto odsiew rozpoczyna się od kwadratu danej liczby - jest to poprawne, ponieważ jeśli liczba \(x\) nie jest pierwsza to jej najniższy dzielnik \(d>1\) spełnia \(d\le \sqrt{x}\).
 	\begin{lstlisting}[style=mystyle, caption= Sito Erastotenesa][language=C]
 	for (i=2;i*i<=n;i++){
 		if (res[i]==0){
@@ -93,7 +93,7 @@
 	}
 	\end{lstlisting}
 	Celem kodu jest jedynie pokazanie koncepcji; nie zachodzi wyścig ani nie ma synchronizacji, ponieważ jest jeden wątek.
-	\item 02\_most\_primitive.cpp - Kod sekwencyjny, który szuka dzielnika \(d\) liczby \(x\) pośród liczb mniejszych równych jej pierwiastkowi: \(d \le \sqrt{x}\). Rozwiązanie to działa w złożoności \(O((r-l)*\sqrt{r})\). Sprawdzałem podzielność także dla liczb, które nie są pierwsze, aby nie używać żadnych tablic poza tablicą znalezionych liczb pierwszych - celem jest pokazanie kodu wykorzystującego w jak najmniejszym stopniu tablice, co za tym idzie mającego niewielkie narzuty związane z dostępem do pamięci.
+	\item \texttt{02\_most\_primitive.cpp} - Kod sekwencyjny, który szuka dzielnika \(d\) liczby \(x\) pośród liczb mniejszych równych jej pierwiastkowi: \(d \le \sqrt{x}\). Rozwiązanie to działa w złożoności \(O((r-l)*\sqrt{r})\). Sprawdzana jest podzielność także dla liczb, które nie są pierwsze, aby nie używać żadnych tablic poza tablicą znalezionych liczb pierwszych - celem jest pokazanie kodu wykorzystującego w jak najmniejszym stopniu tablice, co za tym idzie mającego niewielkie narzuty związane z dostępem do pamięci.
 	\begin{lstlisting}[style=mystyle, caption= Rozwiązanie pierwiastkowe][language=C]
 	for (i=l;i<=r;i++){
 		for (j=2;j*j<=i;j++){
@@ -104,7 +104,7 @@
 		}
 	}
 	\end{lstlisting}
-	\item 03\_erasto\_functional\_static\_schedule.cpp - kod równoległy, koncepcja sita, podejście funkcyjne. Funkcja najpierw wyznacza rekursywnie wszystkie liczby pierwsze \(p\le \sqrt{n}\), gdzie \(n\) to docelowy rozmiar sita, następnie sama poszukuje liczb pierwszych \(p\le n\). Kluczowa część algorytmu wygląda tak:
+	\item \texttt{03\_erasto\_functional\_static\_schedule.cpp} - kod równoległy, koncepcja sita, podejście funkcyjne. Funkcja najpierw wyznacza rekursywnie wszystkie liczby pierwsze \(p\le \sqrt{n}\), gdzie \(n\) to docelowy rozmiar sita, następnie sama poszukuje liczb pierwszych \(p\le n\). Kluczowa część algorytmu wygląda tak:
 	\begin{lstlisting}[style=mystyle, caption= Sito funkcyjne ze static schedulingiem][language=C]
 	#pragma omp parallel for
 	for (i=0;i<=sq;i++){
@@ -117,11 +117,11 @@
 	Gdzie \(sq\) oznacza \(\lfloor(\sqrt{n})\rfloor\), a \(sv\) to najmniejsza liczba większa równa \(sq+1\) i \(i^2\) podzielna przez \(i\). Własności tego kodu:
 	\begin{enumerate}
 		\item Dyrektywa powyżej tworzy zbiór wątków, którym przydziela w przybliżeniu równy podzbiór części domkniętej sita; co istotne, przy tak sformułowanym kodzie wątek będzie wykonywał kolejne iteracje - na przykład 1. wątek może wykonać je dla i=2, 3, 5, 7, a 2. wątek dla 11, 13, 17, 19. Jest to nieefektywne, ponieważ procesy dostaną taką samą ilość liczb, którymi będą odsiewać liczby z otwartej części sita, a proces, który dostanie najmniejsze liczby wykona najwięcej operacji: w powyższym przypadku, 1. wątek wykona nieco mniej niż \(\frac{n}{2}+\frac{n}{3}+\frac{n}{5}+\frac{n}{7}\) operacji oznaczenia liczby (gdzie \(n\) to rozmiar sita - "nieco mniej" wynika z tego, że nie odznaczam liczb \(x<\sqrt{n})\)), a 2. wątek \(\frac{n}{11}+\frac{n}{13}+\frac{n}{17}+\frac{n}{19}\) - czyli dużo mniej.
-		\item Nie zachodzi wyścig (rozumiany jako zależność działania programu od kolejności wykonywania wątków), ponieważ wątki modyfikują tylko część otwartą sita, ponadto jeśli zmieniam wartość jakiegoś elementu tablicy, w której zaznaczam liczby pierwsze, to mogę tylko oznaczyć liczbę jako złożoną; co za tym idzie, jeśli liczba zostanie oznaczona przez kilka wątków jako liczba złożona, to niezależnie od tego, który z nich oznaczy ją jako pierwszy, który później nie zajdzie wyścig. Nie zmieniam w pętli żadnej zmiennej globalnej poza tablicą pierwszości.
-		\item Synchronizacja zachodzi tylko na końcu pętli for, nie powinna mieć istotnego wpływu na czas obliczeń - wywołania rekursywne wykonają się relatywnie szybko, bo suma rozmiarów sit, które będą w nich wypełniane jest nie większa niż \(2*\sqrt{n}\) - można to pokazać przez \(\sqrt[2]{n}+\sqrt[4]{n}+..+k\le\sqrt{n}+\frac{\sqrt{n}}{2}+\frac{\sqrt{n}}{4}+..+\frac{\sqrt{n}}{2^{\lfloor log_2(n) \rfloor}}\le 2*\sqrt{n}\), gdzie \(k \le 4\) - warunek początkowy rekursji, zaś czas wykonania całego sita i tak jest ograniczony przez czas wykonania najwolniejszego procesu w pierwszym wywołaniu funcji (nierekursywnym).
-		\item False sharing może zajść, gdy aktualizuję liczbę znajdującą się w cache po modyfikacji zmiennej w pobliżu w tablicy pierwszości przez inny wątek. Taka sytuacja może zajść przez cały czas działania sita, ponieważ wszystkie wątki mogą aktualizować całą tablicę pierwszości; także w szczególnym przypadku, gdy sprawdzam pod kątem pierwszości liczbę \(x\) z części domkniętej sita, razem z nią ściągając do cache fragment części otwartej sita, ponieważ \(|x-\lfloor\sqrt{n}\rfloor|<64\) (64 bajty to rozmiar linii pamięci, a rozmiar typu bool na używanym sprzęcie to 1 bajt).
+		\item Nie zachodzi wyścig (rozumiany jako używanie przez wątek nieaktualnej wartości zmiennej), ponieważ wątki modyfikują tylko część otwartą sita, ponadto jeśli zmieniana jest wartość jakiegoś elementu tablicy, w której zaznaczane są liczby pierwsze, to można tylko oznaczyć liczbę jako złożoną; co za tym idzie, jeśli liczba zostanie oznaczona przez kilka wątków jako liczba złożona, to niezależnie od tego, który z nich oznaczy ją jako pierwszy, który później nie zajdzie wyścig. Wątek nie zmienia w pętli żadnej zmiennej globalnej poza tablicą pierwszości.
+		\item Synchronizacja zachodzi tylko na końcu pętli for, nie powinna mieć istotnego wpływu na czas obliczeń - wywołania rekursywne wykonają się relatywnie szybko, bo suma rozmiarów sit, które będą w nich wypełniane jest nie większa niż \(2*\sqrt{n}\) - można to pokazać przez \(\sqrt[2]{n}+\sqrt[4]{n}+..+k\le\sqrt{n}+\frac{\sqrt{n}}{2}+\frac{\sqrt{n}}{4}+..+\frac{\sqrt{n}}{2^{\lfloor log_2(n) \rfloor}}\le 2*\sqrt{n}\), gdzie \(k \le 4\) - warunek początkowy rekursji, zaś czas wykonania całego sita i tak jest ograniczony przez czas wykonania najwolniejszego procesu w pierwszym wywołaniu funkcji (nierekursywnym).
+		\item False sharing może zajść, gdy wątek aktualizuje liczbę znajdującą się w cache po modyfikacji zmiennej w pobliżu w tablicy pierwszości przez inny wątek. Taka sytuacja może zajść przez cały czas działania sita, ponieważ wszystkie wątki mogą aktualizować całą tablicę pierwszości; także w szczególnym przypadku, gdy wątek sprawdza pod kątem pierwszości liczbę \(x\) z części domkniętej sita, razem z nią ściągając do cache fragment części otwartej sita, ponieważ \(|x-\lfloor\sqrt{n}\rfloor|<64\) (64 bajty to rozmiar linii pamięci, a rozmiar typu bool na używanym sprzęcie to 1 bajt).
 	\end{enumerate}
-	\item 04\_erasto\_functional\_handmade\_scheduling.cpp - kod równoległy, koncepcja sita, podejście funkcyjne. Kod jest analogiczny do poprzedniego, ale iteracje są ręcznie przypisywane do każdego wątku - Najpierw wyliczam sumę \(sum=\frac{1}{2}+\frac{1}{3}+\frac{1}{5}+\frac{1}{7}+...+\frac{1}{np}\), gdzie \(np\) to najwyższa liczba pierwsza \(np\le\sqrt{n}\)  i średnią liczbę operacji zmniejszoną \(n\)-krotnie, które mają być wykonywane przez proces: \(partsum=\frac{sum}{proc}\), gdize \(proc\) to liczba procesów. Następnie każdemu procesowi przydzielam w osobnej tablicy liczby pierwsze, którymi będzie skreślał elementy tablicy w ten sposób, że:
+	\item \texttt{04\_erasto\_functional\_handmade\_scheduling.cpp} - kod równoległy, koncepcja sita, podejście funkcyjne. Kod jest analogiczny do poprzedniego, ale iteracje są ręcznie przypisywane do każdego wątku. Najpierw wyliczana jest suma \(sum=\frac{1}{2}+\frac{1}{3}+\frac{1}{5}+\frac{1}{7}+...+\frac{1}{np}\), gdzie \(np\) to najwyższa liczba pierwsza \(np\le\sqrt{n}\), oraz średnia liczba operacji, zmniejszona \(n\)-krotnie, która ma być wykonywana przez proces: \(partsum=\frac{sum}{proc}\), gdzie \(proc\) to liczba procesów. Następnie każdemu procesowi przydzielane są w osobnej tablicy liczby pierwsze, którymi będzie skreślał elementy tablicy w ten sposób, że:
 	\begin{enumerate}
 		\item \(i\)-ty proces dostanie \(i\)-tą liczbę pierwszą
 		\item następnie proces będzie dobierał sobie nieprzydzielone liczby pierwsze począwszy od \(np\) do momentu, w którym jego szacowana liczba operacji nie przekroczy \(psum\)
@@ -156,8 +156,9 @@
 		}
 	}
 	\end{lstlisting}
-	Dzięki powyższemu rozwiążę problem przedstawiony w części (a) poprzedniego rozwiązania - procesy będą względnie równo dzielić się pracą bez dodatkowego narzutu związanego z synchronizacją, przy czym procesy, które wezmą najniższe liczby pierwsze (2, 3, czasem 5) nadal wykonałyby największą pracę, ponieważ dla \(n<500000000 \land proc=8\) nadal zachodzi \(\frac{1}{2}\ge psum)\) - Analogicznie dla 3. Problemem z tą heurystyką jest nieuwzględnienie cache missów: odznaczanie liczb złożonych za pomocą liczby 2 będzie miało dużo rzadziej cache missa niż odznacznie liczb złożonych za pomocą za pomocą liczby 8387, a następnie kolejnych 10 liczb pierwszych, za każdym razem wymieniając dane w cache. Pozostałe części rozwiązania - (b), (c), (d) są identyczne dla tego kodu.
-	\item 05\_erasto\_functional\_dynamic\_schedule.cpp - działa tak jak kod (3), ale używa innej dyrektywy:
+	Dzięki powyższemu rozwiązany zostanie problem przedstawiony w części (a) poprzedniego rozwiązania - procesy będą względnie równo dzielić się pracą bez dodatkowego narzutu związanego z synchronizacją, przy czym procesy, które wezmą najniższe liczby pierwsze (2, 3, czasem 5) nadal wykonają największą pracę, ponieważ dla \(n<500000000 \land proc=8\) nadal zachodzi \(\frac{1}{2}\ge psum)\) - analogicznie dla 3. Problemem z tą heurystyką jest nieuwzględnienie cache missów: odznaczanie liczb złożonych za pomocą liczby 2 będzie miało dużo rzadziej cache missa niż odznacznie liczb złożonych za pomocą za pomocą liczby 8387, a następnie kolejnych 10 liczb pierwszych, za każdym razem wymieniając dane w cache. Pozostałe części rozwiązania - (b), (c), (d) są identyczne dla tego kodu.
+	
+	\item \texttt{05\_erasto\_functional\_dynamic\_schedule.cpp} - działa tak jak kod (3), ale używa innej dyrektywy:
 	\begin{lstlisting}[style=mystyle, caption= Sito funkcyjne z dynamic schedulingiem][language=C]
 	#pragma omp parallel for schedule(dynamic)
 		for (i=0;i<=sq;i++){
@@ -166,7 +167,8 @@
 		}
 	\end{lstlisting}
 	Dzięki zmianie dyrektywy na schedule(dynamic) wątek po zakończeniu swojej pracy wykonuje część (blok) pracy innego wątku zamiast niego - dzięki temu wątki będą się dzieliły równo pracą, natomiast w porównaniu z kodem (3) dojdzie narzut związany z koniecznością synchronizacji wątków. Rozwiązanie zadania (3) używało domyślnej klauzuli schedule(static).
-	\item 07\_erasto\_domain.cpp - kod równoległy, koncepcja sita, podejście domenowe. Każdy wątek, znając swój numer, używając całej tablicy pierwszości do \(\sqrt{n}\) włącznie oznacza wszystkie liczby podzielne przez daną liczbę pierwszą większe niż \(\sqrt{n}\), które należą do przedziału unikalnego dla danego procesu, wyznaczonego za pomocą jego numeru.
+	
+	\item \texttt{07\_erasto\_domain.cpp} - kod równoległy, koncepcja sita, podejście domenowe. Każdy wątek, znając swój numer, używając całej tablicy pierwszości do \(\sqrt{n}\) włącznie oznacza wszystkie liczby podzielne przez daną liczbę pierwszą większe niż \(\sqrt{n}\), które należą do przedziału unikalnego dla danego procesu, wyznaczonego za pomocą jego numeru.
 	\begin{lstlisting}[style=mystyle, caption= Sito funkcyjne z dynamic schedulingiem][language=C]
 	#pragma omp parallel
 	{
@@ -183,14 +185,14 @@
 		}
 	}
 	\end{lstlisting}
-	Kod ten ma 3 zasadnicze różnice w porównaniu z kodem (3) w kontekście wspólbieżności:
+	Kod ten ma 3 zasadnicze różnice w porównaniu z kodem (3) w kontekście współbieżności:
 	\begin{enumerate}
-		\item Dyrektywa tworzy wątki, które podzielą się nieomal równomiernie pracą - ponieważ każdy wątek musi użyć każdej liczby pierwszej z części domkniętej sita do oznaczenia przedziału z części otwartej sita o wielkości (prawie) równej dla każdego wątku.
-		\item False sharing zachodzi w szczególnym przypadku, gdy sprawdzam pod kątem pierwszości liczbę \(x\) - albo ją odnaczam jako złożoną, razem z nią ściągając do cache liczbę \(y\) w części otwartej używanej przez inny wątek, która może się zmieniać, ponieważ \(|x-y|<64\) (64 bajty to rozmiar linii pamięci, a rozmiar typu bool na systemie, na którym zaszło testowanie to 1 bajt). Może on jednak zajść nie więcej niż \((4+1)*64*log_2(n)\) razy, bo \(\sqrt[log_2(n)]{n}\le log_2(n)\), a liczba wątków to co najwyżej \(4\), dodatkowe \(+1\) wynika z wątku używającego podciągu obok tablicy z części domkniętej sita - jest to liczba o kilka rzędów wielkości mniejsza niż \(n\), zatem (co pokaże później VTune profiler) false sharing nie będzie prawie wcale wpływał na czas przetwarzania.
+		\item Dyrektywa tworzy wątki, które podzielą się prawie równomiernie pracą - ponieważ każdy wątek musi użyć każdej liczby pierwszej z części domkniętej sita do oznaczenia przedziału z części otwartej sita o wielkości (prawie) równej dla każdego wątku.
+		\item False sharing zachodzi w szczególnym przypadku, gdy sprawdzana jest pod kątem pierwszości liczbę \(x\) i odznaczana jest jako złożoną, ściągając do cache także liczbę \(y\) w części otwartej używanej przez inny wątek, która może się zmieniać, ponieważ \(|x-y|<64\) (64 bajty to rozmiar linii pamięci, a rozmiar typu bool na systemie, na którym zaszło testowanie to 1 bajt). Może to jednak zajść nie więcej niż \((4+1)*64*log_2(n)\) razy, bo \(\sqrt[log_2(n)]{n}\le log_2(n)\), a liczba wątków to co najwyżej \(4\), dodatkowe \(+1\) wynika z wątku używającego podciągu obok tablicy z części domkniętej sita - jest to liczba o kilka rzędów wielkości mniejsza niż \(n\), zatem (co pokaże później VTune profiler) false sharing nie będzie prawie wcale wpływał na czas przetwarzania.
 		\item Wątki będą modyfikowały współdzielone L2 i L3 cache - co za tym idzie, często będą zachodziły cache-missy, ponieważ L2 i L3 cache będą często zmieniały dane - w praktyce każdy wątek będzie modyfikował zupełnie inne części tablicy, które będą stale się zmieniać (inaczej niż np. w przypadku, w którym 1 wątek modyfikuje co 2. element tablicy), a nie zmieszczą się one w L1 cache (mogącej pomieścić 128KB danych nie będących instrukcjami).
 	\end{enumerate}
 
-	\item 08\_erasto\_super\_domain.cpp - usunięty został problem częstych cache missów przez to, że wątek aktualizuje w 1 pętli co najwyżej 32000 kolejne elementy sita plus kilka dodatkowych; W moim algorytmie utrzymuję tablicę liczb pierwszych modyfikowaną przed stworzeniem wątków wartościami \(x\le \sqrt{n}\); Każdy wątek aktualizuje kolejne liczby pierwsze od poprzedniej oznaczonej albo startowej, dopóki nie przekroczy \(left+32000\) albo prawej granicy podzbioru, który wolno mi modyfikować. (\(left\) to początek iteracji), wtedy jest to jego ostatnia iteracja w tym batchu; przechodzę do kolejnej liczby powtarzając proces; w końcu, po przejściu całej tablicy liczb pierwszych, wracam do 1. liczby pierwszej i aktualizuje \(left+=32000\). Powtarzam proces dopóki każda liczba pierwsza nie przekroczy prawej granicy zadanego ciągu.
+	\item \texttt{08\_erasto\_super\_domain.cpp} - usunięty został problem częstych cache missów przez to, że wątek aktualizuje w 1 pętli co najwyżej 32000 kolejne elementy sita plus kilka dodatkowych. W algorytmie utrzymywana jest tablica liczb pierwszych modyfikowana przed stworzeniem wątków wartościami \(x\le \sqrt{n}\). Każdy wątek aktualizuje kolejne liczby pierwsze od poprzedniej oznaczonej albo startowej, dopóki nie przekroczy \(left+32000\) albo prawej granicy podzbioru, który wolno mu modyfikować (\(left\) to początek iteracji), wtedy jest to jego ostatnia iteracja w tym batchu. Następnie przechodzi do kolejnej liczby powtarzając proces. W końcu, po przejściu całej tablicy liczb pierwszych, wraca do 1. liczby pierwszej i aktualizuje \(left+=32000\). Następnie wątek powtarza proces dopóki każda liczba pierwsza nie przekroczy prawej granicy zadanego ciągu.
 	\begin{lstlisting}[style=mystyle, caption= Sito funkcyjne z dynamic schedulingiem][language=C]
 	ineo=0;
 	for (int vi=0;vi<=sq;vi++){
@@ -223,9 +225,9 @@
 		}
 	}
 \end{lstlisting}
-Jedyną fundamentalną różnicą pomiędzy tym kodem a zwykłym sitem domenowym jest unikanie cache missów i dążenie do trzymania w L1 cache jak największej części aktualnie używanego sita. Poza tym złożoność może się zwiększyć, a przynajmniej nie jestem w stanie dowieść standardowej złożoności sita. To rozwiązanie pozwala efektywnie zrównoleglić zadanie uzyskując CPI=0.331 i czas przetwarzania 0.4s dla \(l=1, r=10^9\) na 4 rdzeniach, co pokażą wyniki VTune'a.
+Jedyną fundamentalną różnicą pomiędzy tym kodem a zwykłym sitem domenowym jest unikanie cache missów i dążenie do trzymania w L1 cache jak największej części aktualnie używanego sita. Poza tym złożoność może się zwiększyć, a przynajmniej nie udało się dowieść standardowej złożoności sita. To rozwiązanie pozwala efektywnie zrównoleglić zadanie uzyskując CPI=0.331 i czas przetwarzania 0.4s dla \(l=1, r=10^9\) na 4 rdzeniach, co pokażą wyniki VTune'a.
 
-	\item 09\_sqrt\_domain.cpp - kod równoległy, koncepcja dzielenia, podejście domenowe (dodatkowy kod do pokazania współbieżności bez dzielenia pamięci). Każdy wątek używa liczb \(y\le\sqrt{n}\) do odznaczania własnego podzbioru \(N\) wyznaczanego przez dyrektywę \#pragma omp parallel for
+	\item \texttt{09\_sqrt\_domain.cpp} - kod równoległy, koncepcja dzielenia, podejście domenowe (dodatkowy kod do pokazania współbieżności bez dzielenia pamięci). Każdy wątek używa liczb \(y\le\sqrt{n}\) do odznaczania własnego podzbioru \(N\) wyznaczanego przez dyrektywę \#pragma omp parallel for
 	\begin{lstlisting}[style=mystyle, caption= Sito funkcyjne z dynamic schedulingiem][language=C]
 	#pragma omp parallel for
 	for (i=2;i<=n;i++){
@@ -244,16 +246,16 @@ Jedyną fundamentalną różnicą pomiędzy tym kodem a zwykłym sitem domenowym
 		\item Jedyna synchronizacja zajdzie na końcu pętli for.
 		\item False sharing może zachodzić tylko na stykach podzbiorów zbioru otwartego modyfikowanych przez 2 wątki.
 	\end{enumerate}
-	Kod ten się bardzo efektywnie zrównolegla, ale i tak jest wiele wolniejszy od sit z powodu gorszej złożoności obliczeniowej.
+	Kod ten się bardzo efektywnie zrównolegla, ale i tak jest o wiele wolniejszy od sit z powodu gorszej złożoności obliczeniowej.
 \end {enumerate}
 
 \section {Wprowadzenie do rezultatów pomiarów}
 \begin{enumerate}
-	\item Wykonałem 3 eksperymenty z kodem:
+	\item Wykonano 3 eksperymenty z kodem:
 	\begin{enumerate}
-		\item Pierwszym było stworzenie podstawowego sita i rozwiązania pierwisatkowego. Rozwiązanie pierwiastkowe pokazałem od razu w wersji zrównoleglonej, jej konstrukcja ograniczała się bowiem do dodania jednej dyrektywy do kodu sekwencyjnego. Sito erastotenesa sekwencyjne było podstawą do dalszych obliczeń.
+		\item Pierwszym było stworzenie podstawowego sita i rozwiązania pierwiastkowego. Rozwiązanie pierwiastkowe pokazano od razu w wersji zrównoleglonej, jej konstrukcja ograniczała się bowiem do dodania jednej dyrektywy do kodu sekwencyjnego. Sito Erastotenesa sekwencyjne było podstawą do dalszych obliczeń.
 		\item Drugi eksperyment to sprawdzenie, jak w zależności od przydziału zadań i synchronizacji procesy używające sita w ramach koncepcji funkcyjnej będą działały, co będzie je ograniczało i które będzie efektywniejsze - ręcznie napisane, używające prostej heurystyki czy używające dyrektywy z dynamicznym przydziałem procesów do zadań.
-		\item Trzecim, kluczowym eksperymentem było pokazanie, jak uzyskać eleganckie, bardzo szybkie sito w wariancie domenowym wykorzystując dobrodziejstwa Cache L1, jej własności i proste ulepszenie sita pod kątem zwiększenia liczby trafień do pamięci. Porównywałem je ze standardowym sitem domenowym.
+		\item Trzecim, kluczowym eksperymentem było pokazanie, jak uzyskać eleganckie, bardzo szybkie sito w wariancie domenowym wykorzystując dobrodziejstwa Cache L1, jej własności i proste ulepszenie sita pod kątem zwiększenia liczby trafień do pamięci. Porównano je ze standardowym sitem domenowym.
 	\end{enumerate}
 
 	\item VTune Profiler używa licznika zdarzeń sprzętowych do zdobycia informacji na temat przetwarzania, po czym (po przetwarzaniu) łączy te informacje w metryki np. CPI. Używa do zdobywania informacji PMU (performance monitoring unit) - ich liczba jest ograniczona, a sumują one informację o jednym, konkretnym zdarzeniu, przez co część zdarzeń jest raczej estymowana niż deterministycznie obliczana. Pojedynczy PMU wyliczający jakąś konkretną statystykę, wiedząc o zajściu zdarzenia inkrementuje rejestr; gdy rejestr przyjmie wartość progu próbkowania, jest on łączony z instrukcją tak, aby dowiedzieć się, po ilu zdarzeniach globalnych zaszło tyle zdarzeń danego typu (co istotne, aby statystyka/estymacja była zasadna, musi zajść odpowiednia liczba zdarzeń globalnych). Metryki, które zostały użyte w tym sprawozdaniu, to: 
@@ -295,9 +297,9 @@ Oznaczenia i skróty:
 \end{enumerate}
 \begin{flushleft}
 \begin{landscape}
-	
 	\resizebox{\columnwidth}{!}{%
 	\begin{tabular}{| l | l | l | l | l | l | l | l | l | l | l | l | l | l | l | l | l | l | l | l | l |}
+		\hline
 		name & left & right & T & Elapsed & Ticks & IR & R & FEB & BEB & MB & CB & L1 & L2 & L3 & DRB & DTB & ECPU & Div & Eff & Avg \\ \hline
 		03\_efss & 2.0 & 1.00E+09 & 2.0 & 10.448 & 4.96E+10 & 1.44E+10 & 6.8 & 0.4 & 92.5 & 76.8 & 15.7 & 16.3 & 0.0 & 12.1 & 0.0 & 32.7 & 27.2 & 614.59 & 307.29 & 9.57E+07 \\ \hline
 		03\_efss & 2.0 & 1.00E+09 & 4.0 & 10.094 & 6.11E+10 & 1.62E+10 & 7.4 & 0.3 & 91.9 & 74.7 & 17.2 & 7.8 & 0.0 & 18.8 & 0.0 & 37.5 & 34.8 & 593.76 & 148.44 & 9.91E+07 \\ \hline
@@ -328,11 +330,11 @@ Oznaczenia i skróty:
 \section{Wnioski}
 \begin{enumerate}
 	\item Rozwiązanie oparte na wyznaczaniu dzielników mniejszych równych od \(\sqrt{n}\) bardzo efektywnie się zrównolegla - procesy dzielą się pracą bardzo równo, przez większość czasu działania programu wykonuje się 7-8 wątków. Zwiększenie liczby procesów \(k\)-krotnie powoduje zmniejszenie czasu przetwarzania prawie \(k\)-krotnie, przy założeniu, że nowy wątek jest wykonywany przez inny procesor logiczny. Nie zachodzi prawie wcale False Sharing, ponieważ jedyna współdzielona zmienna to tablica liczb pierwszych. Wątki nie czytają współdzielonej pamięci, co powoduje, że praktycznie nie zachodzą cache missy. Wąskim gardłem rozwiązania jest Front-End Bound - co oznacza, że są większe problemy z dostarczeniem zadania do wykonania do Back-endu niż z jego wykonaniem; a także intensywne dzielenie, zwiększające Core-Bound. Algorytm pomimo zrównoleglenia nadal jest wolniejszy od sekwencyjnego sita, ponieważ ma większą złożoność - dla \(n=10^9\) ponad 1000-krotnie wolniejszy.
-	\item Sito erastotenesa w podejściu funkcyjnym było w stanie uzyskać prawie 2-krotne przyspieszenie względem sekwencyjnego sita używając dynamic schedulingu. Co ciekawe, rozwiązania używające handmade schedulingu jest około 1.5 razy wolniejsze od rozwiązania używającego static schedulingu, pomimo tego, że ma prawie dwukrotnie wyższy współczynnik "effective physcial core utilization" - powodem jest to, że bardzo często zachodzi
+	\item Sito Erastotenesa w podejściu funkcyjnym było w stanie uzyskać prawie 2-krotne przyspieszenie względem sekwencyjnego sita używając dynamic schedulingu. Co ciekawe, rozwiązania używające handmade schedulingu jest około 1.5 razy wolniejsze od rozwiązania używającego static schedulingu, pomimo tego, że ma prawie dwukrotnie wyższy współczynnik "effective physcial core utilization" - powodem jest to, że bardzo często zachodzi
 	
 	\item Jakie podejście równoległe jest najbardziej efektywne, czy efektywność skaluje się ze wzrostem liczby procesorów (jest stała, w
 	jaki sposób się zmienia), jak wygląda przegląd efektywności użytych podejść. Jakie są przyczyny tych wyników.
-	\item Najbardziej efektowne jest ulepszone sito domenowe - zrównolegla się bez żadnego problemu (dla \(k\) wątków i \(t_{sequential} =\) czas dla 1 wątku, czas przetwarzania to \(\frac{t_{sequential}}{k}\)), a czas przetwarzania na 1 wątku jest 8 razy krótszy niż czas przetwarzania standardowego sita. Wynika to z zapewnienia tego, że większość operacji w pamięci zaliczy trafienie już na etapie L1 cache - nie wynika to z pojedynczej linii, ale z konstrukcji algorytmu i iterowania się w batchach co 32000 intów, czyli 128.000 bajtów, które mogą się zmieścić w L1 cache. Ponadto sam algorytm nie generuje dużo większego narzutu niż zwykłe sito, chociaż złożoność ma uzależnioną od liczby, o którą się przesuwam - jeśli mogę ją oszacować przez \(O(\sqrt{n})\) dla \(n\)- rozmiaru sita, to sito wykona co najwyżej \(O(\sqrt{n})*O(\sqrt{n})=O(n)\) "pustych przelotów" - iteracji, w trakcie których nie przejdę do skreślania liczb pierwszych (ponieważ liczba liczb pierwszych \(p\le\sqrt{n}\) jest ograniczona przez \(\sqrt{n}\), a liczba iteracji przez odwrotność przesunięcie sita - czyli \(O(\sqrt{n})\). To ogranicza złożoność algorytmu do złożoności standardowego sita. Procesy nadal dzielą między sobą po równo liczbę elementów części otwartej sita, co za tym idzie algorytm jest najlepszy zarówno w kontekście zrównoleglania, jak i efektywności.
+	\item Najbardziej efektywne jest ulepszone sito domenowe - zrównolegla się bez żadnego problemu (dla \(k\) wątków i \(t_{sequential} =\) czas dla 1 wątku, czas przetwarzania to \(\frac{t_{sequential}}{k}\)), a czas przetwarzania na 1 wątku jest 8 razy krótszy niż czas przetwarzania standardowego sita. Wynika to z zapewnienia tego, że większość operacji w pamięci zaliczy trafienie już na etapie L1 cache - nie wynika to z pojedynczej linii, ale z konstrukcji algorytmu i iterowania się w batchach co 32000 intów, czyli 128.000 bajtów, które mogą się zmieścić w L1 cache. Ponadto sam algorytm nie generuje dużo większego narzutu niż zwykłe sito, chociaż złożoność ma uzależnioną od liczby, o którą się przesuwa - jeśli można ją oszacować przez \(O(\sqrt{n})\) dla \(n\)- rozmiaru sita, to sito wykona co najwyżej \(O(\sqrt{n})*O(\sqrt{n})=O(n)\) "pustych przelotów" - iteracji, w trakcie których nie przejdzie do skreślania liczb pierwszych (ponieważ liczba liczb pierwszych \(p\le\sqrt{n}\) jest ograniczona przez \(\sqrt{n}\), a liczba iteracji przez odwrotność przesunięcie sita - czyli \(O(\sqrt{n})\). To ogranicza złożoność algorytmu do złożoności standardowego sita. Procesy nadal dzielą między sobą po równo liczbę elementów części otwartej sita, co za tym idzie algorytm jest najlepszy zarówno w kontekście zrównoleglania, jak i efektywności.
 \end{enumerate}
 
 \end{document}
