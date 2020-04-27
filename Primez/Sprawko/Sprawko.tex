@@ -249,7 +249,13 @@ Jedyną fundamentalną różnicą pomiędzy tym kodem a zwykłym sitem domenowym
 
 \section {Wprowadzenie do rezultatów pomiarów}
 \begin{enumerate}
-	\item 
+	\item Wykonałem 3 eksperymenty z kodem:
+	\begin{enumerate}
+		\item Pierwszym było stworzenie podstawowego sita i rozwiązania pierwisatkowego. Rozwiązanie pierwiastkowe pokazałem od razu w wersji zrównoleglonej, jej konstrukcja ograniczała się bowiem do dodania jednej dyrektywy do kodu sekwencyjnego. Sito erastotenesa sekwencyjne było podstawą do dalszych obliczeń.
+		\item Drugi eksperyment to sprawdzenie, jak w zależności od przydziału zadań i synchronizacji procesy używające sita w ramach koncepcji funkcyjnej będą działały, co będzie je ograniczało i które będzie efektywniejsze - ręcznie napisane, używające prostej heurystyki czy używające dyrektywy z dynamicznym przydziałem procesów do zadań.
+		\item Trzecim, kluczowym eksperymentem było pokazanie, jak uzyskać eleganckie, bardzo szybkie sito w wariancie domenowym wykorzystując dobrodziejstwa Cache L1, jej własności i proste ulepszenie sita pod kątem zwiększenia liczby trafień do pamięci. Porównywałem je ze standardowym sitem domenowym.
+	\end{enumerate}
+
 	\item VTune Profiler używa licznika zdarzeń sprzętowych do zdobycia informacji na temat przetwarzania, po czym (po przetwarzaniu) łączy te informacje w metryki np. CPI. Używa do zdobywania informacji PMU (performance monitoring unit) - ich liczba jest ograniczona, a sumują one informację o jednym, konkretnym zdarzeniu, przez co część zdarzeń jest raczej estymowana niż deterministycznie obliczana. Pojedynczy PMU wyliczający jakąś konkretną statystykę, wiedząc o zajściu zdarzenia inkrementuje rejestr; gdy rejestr przyjmie wartość progu próbkowania, jest on łączony z instrukcją tak, aby dowiedzieć się, po ilu zdarzeniach globalnych zaszło tyle zdarzeń danego typu (co istotne, aby statystyka/estymacja była zasadna, musi zajść odpowiednia liczba zdarzeń globalnych). Metryki, które zostały użyte w tym sprawozdaniu, to: 
 	
 	\begin{enumerate}
@@ -269,33 +275,52 @@ Jedyną fundamentalną różnicą pomiędzy tym kodem a zwykłym sitem domenowym
 \end{enumerate}
 
 \section{Tablica wynków: kody sit i pierwiastkowe}
+Oznaczenia i skróty:
+\begin{enumerate}
+	\item name - nazwa kodu, pierwsz cyfry jego nazwy i skrót.
+	\item left, right - przedział, dla którego wykonano program.
+	\item T - liczba wątków
+	\item Elapsed - czas, który upłynął od początku przetwarzania
+	\item Ticks - liczba cykli procesora w trakcie wykonywania kodu.
+	\item IR - Instructions Retired
+	\item R - Retired
+	\item FEB, BEB - Front-end bound, Back-end Bound
+	\item MB, CB - Memory Bound,  Core Bound
+	\item L1, L2, L3 - L1 Bound, L2 Bound, L3 Bound
+	\item DRB, DTB - DRAM Bound, DTLB Store Overhead
+	\item ECPU - Effective CPU Utilization
+	\item Div - przyspieszenie przetwarzania równoległego
+	\item Eff - efektywność przetwarzania równoległego
+	\item Avg - liczba przetestowanych liczb w jednostce czasu.
+\end{enumerate}
 \begin{flushleft}
 \begin{landscape}
-	\begin{tabular}{| l | l | l | l | l | l | l | l | l | l | l | l | l | l | l | l | l |}
-		\hline
-		name & LR & T & Elapsed & Ticks & IR & R & FEB & BEB & MB & CB & L1 & L2 & L3 & DRAMB & DTLBB & ECPU \\ \hline
-		03\_efss & 2 & 4 & 10.199 & 60840000000 & 16008000000 & 6.8 & 0.4 & 92.4 & 75.5 & 16.9 & 9.7 & 0.3 & 17.5 & 0.0 & 36.3 & 34.3 \\ \hline
-		04\_efhs & 2 & 4 & 8.802 & 120436000000 & 14348000000 & 2.8 & 0.9 & 96.1 & 78.7 & 17.4 & 0.0 & 0.0 & 35.5 & 0.0 & 43.2 & 80.5 \\ \hline
-		05\_efds & 2 & 4 & 6.417 & 103424000000 & 14692000000 & 3.3 & 0.9 & 95.5 & 78.5 & 17.0 & 2.7 & 0.0 & 25.5 & 0.0 & 40.8 & 96.0 \\ \hline
-		08\_esd & 2 & 4 & 0.419 & 6468000000 & 18056000000 & 47.2 & 9.1 & 33.1 & 19.5 & 13.6 & 14.6 & 0.4 & 1.1 & 0.0 & 0.7 & 92.5 \\ \hline
-		09\_ed & 2 & 4 & 9.204 & 146736000000 & 21116000000 & 3.9 & 0.6 & 95.3 & 73.3 & 22.1 & 6.5 & 0.0 & 24.5 & 0.0 & 35.6 & 94.8 \\ \hline
-		08\_esd & 2 & 1 & 1.494 & 6296000000 & 17932000000 & 49.8 & 14.8 & 25.1 & 21.5 & 3.6 & 26.4 & 2.0 & 1.4 & 0.0 & 1.7 & 24.2 \\ \hline
-		08\_esd & 2 & 2 & 0.769 & 6328000000 & 17936000000 & 49.4 & 12.0 & 28.8 & 20.2 & 8.7 & 19.5 & 0.9 & 1.1 & 0.0 & 1.2 & 47.4 \\ \hline
-		08\_esd & 2 & 4 & 0.412 & 6352000000 & 17948000000 & 51.7 & 9.7 & 28.1 & 17.0 & 11.1 & 15.4 & 0.7 & 0.0 & 0.7 & 0.7 & 92.4 \\ \hline
-		09\_ed & 2 & 1 & 11.113 & 47204000000 & 19092000000 & 8.9 & 0.8 & 90.1 & 72.5 & 17.6 & 21.2 & 0.9 & 0.0 & 9.9 & 33.3 & 24.2 \\ \hline
-		09\_ed & 2 & 2 & 9.315 & 78816000000 & 19164000000 & 5.8 & 0.4 & 93.5 & 73.4 & 20.1 & 22.4 & 0.3 & 7.6 & 0.0 & 33.0 & 48.4 \\ \hline
-		09\_ed & 2 & 4 & 9.266 & 147500000000 & 21140000000 & 4.1 & 0.7 & 95.0 & 72.7 & 22.3 & 7.6 & 0.0 & 23.4 & 0.0 & 34.6 & 94.8 \\ \hline
-		08\_esd & 2 & 1 & 0.019 & 48000000 & 160000000 & 0.0 & 20.8 & 79.2 & 79.2 & 0.0 & 41.7 & 0.0 & 0.0 & 0.0 & 0.0 & 23.2 \\ \hline
-		08\_esd & 2 & 2 & 0.014 & 56000000 & 164000000 & 0.0 & 0.0 & 100.0 & 0.0 & 100.0 & 0.0 & 0.0 & 0.0 & 0.0 & 0.0 & 34.9 \\ \hline
-		08\_esd & 2 & 4 & 0.014 & 64000000 & 168000000 & 0.0 & 0.0 & 100.0 & 0.0 & 100.0 & 0.0 & 0.0 & 0.0 & 0.0 & 0.0 & 53.0 \\ \hline
-		09\_ed & 2 & 1 & 0.053 & 172000000 & 180000000 & 0.0 & 0.0 & 100.0 & 92.9 & 7.1 & 0.0 & 0.0 & 0.0 & 0.0 & 0.0 & 23.7 \\ \hline
-		09\_ed & 2 & 2 & 0.037 & 216000000 & 200000000 & 0.0 & 0.0 & 100.0 & 100.0 & 0.0 & 0.0 & 0.0 & 0.0 & 0.0 & 0.0 & 41.6 \\ \hline
-		09\_ed & 2 & 4 & 0.025 & 252000000 & 208000000 & 0.0 & 0.0 & 100.0 & 0.0 & 100.0 & 0.0 & 0.0 & 0.0 & 0.0 & 0.0 & 75.1 \\ \hline
-		02\_ss & 2 & 1 & 4.197 & 17864000000 & 17556000000 & 43.9 & 43.2 & 12.2 & 7.6 & 4.6 & 26.4 & 0.0 & 0.0 & 0.0 & 0.0 & 24.3 \\ \hline
-		01\_es & 2 & 1 & 10.429 & 44296000000 & 13632000000 & 7.1 & 0.5 & 92.2 & 77.0 & 15.3 & 18.2 & 1.5 & 1.1 & 7.9 & 32.1 & 24.2 \\ \hline
-	\end{tabular}
-\end{landscape}
 	
+	\resizebox{\columnwidth}{!}{%
+	\begin{tabular}{| l | l | l | l | l | l | l | l | l | l | l | l | l | l | l | l | l | l | l | l | l |}
+		\hline
+		name & left & right & T & Elapsed & Ticks & IR & R & FEB & BEB & MB & CB & L1 & L2 & L3 & DRB & DTB & ECPU & Div & Eff & Avg \\ \hline
+		03\_efss & 2.0 & 1.00E+09 & 4.0 & 10.199 & 6.08E+10 & 1.60E+10 & 6.8 & 0.4 & 92.4 & 75.5 & 16.9 & 9.7 & 0.3 & 17.5 & 0.0 & 36.3 & 34.3 & 728.5 & 182.12 & 9.80E+07 \\ \hline
+		04\_efhs & 2.0 & 1.00E+09 & 4.0 & 8.802 & 1.20E+11 & 1.43E+10 & 2.8 & 0.9 & 96.1 & 78.7 & 17.4 & 0.0 & 0.0 & 35.5 & 0.0 & 43.2 & 80.5 & 628.71 & 157.18 & 1.14E+08 \\ \hline
+		05\_efds & 2.0 & 1.00E+09 & 4.0 & 6.417 & 1.03E+11 & 1.47E+10 & 3.3 & 0.9 & 95.5 & 78.5 & 17.0 & 2.7 & 0.0 & 25.5 & 0.0 & 40.8 & 96.0 & 458.36 & 114.59 & 1.56E+08 \\ \hline
+		08\_esd & 2.0 & 1.00E+09 & 4.0 & 0.419 & 6.47E+09 & 1.81E+10 & 47.2 & 9.1 & 33.1 & 19.5 & 13.6 & 14.6 & 0.4 & 1.1 & 0.0 & 0.7 & 92.5 & 29.93 & 7.48 & 2.39E+09 \\ \hline
+		07\_ed & 2.0 & 1.00E+09 & 4.0 & 9.204 & 1.47E+11 & 2.11E+10 & 3.9 & 0.6 & 95.3 & 73.3 & 22.1 & 6.5 & 0.0 & 24.5 & 0.0 & 35.6 & 94.8 & 657.43 & 164.36 & 1.09E+08 \\ \hline
+		08\_esd & 2.0 & 1.00E+09 & 1.0 & 1.494 & 6.30E+09 & 1.79E+10 & 49.8 & 14.8 & 25.1 & 21.5 & 3.6 & 26.4 & 2.0 & 1.4 & 0.0 & 1.7 & 24.2 & 106.71 & 106.71 & 6.69E+08 \\ \hline
+		08\_esd & 2.0 & 1.00E+09 & 2.0 & 0.769 & 6.33E+09 & 1.79E+10 & 49.4 & 12.0 & 28.8 & 20.2 & 8.7 & 19.5 & 0.9 & 1.1 & 0.0 & 1.2 & 47.4 & 54.93 & 27.46 & 1.30E+09 \\ \hline
+		08\_esd & 2.0 & 1.00E+09 & 4.0 & 0.412 & 6.35E+09 & 1.79E+10 & 51.7 & 9.7 & 28.1 & 17.0 & 11.1 & 15.4 & 0.7 & 0.0 & 0.7 & 0.7 & 92.4 & 29.43 & 7.36 & 2.43E+09 \\ \hline
+		07\_ed & 2.0 & 1.00E+09 & 1.0 & 11.113 & 4.72E+10 & 1.91E+10 & 8.9 & 0.8 & 90.1 & 72.5 & 17.6 & 21.2 & 0.9 & 0.0 & 9.9 & 33.3 & 24.2 & 793.79 & 793.79 & 9.00E+07 \\ \hline
+		07\_ed & 2.0 & 1.00E+09 & 2.0 & 9.315 & 7.88E+10 & 1.92E+10 & 5.8 & 0.4 & 93.5 & 73.4 & 20.1 & 22.4 & 0.3 & 7.6 & 0.0 & 33.0 & 48.4 & 665.36 & 332.68 & 1.07E+08 \\ \hline
+		07\_ed & 2.0 & 1.00E+09 & 4.0 & 9.266 & 1.48E+11 & 2.11E+10 & 4.1 & 0.7 & 95.0 & 72.7 & 22.3 & 7.6 & 0.0 & 23.4 & 0.0 & 34.6 & 94.8 & 661.86 & 165.46 & 1.08E+08 \\ \hline
+		08\_esd & 2.0 & 1.00E+07 & 1.0 & 0.019 & 4.80E+07 & 1.60E+08 & 0.0 & 20.8 & 79.2 & 79.2 & 0.0 & 41.7 & 0.0 & 0.0 & 0.0 & 0.0 & 23.2 & 1.36 & 1.36 & 5.26E+08 \\ \hline
+		08\_esd & 2.0 & 1.00E+07 & 2.0 & 0.014 & 5.60E+07 & 1.64E+08 & 0.0 & 0.0 & 100.0 & 0.0 & 100.0 & 0.0 & 0.0 & 0.0 & 0.0 & 0.0 & 34.9 & 1.0 & 0.5 & 7.14E+08 \\ \hline
+		08\_esd & 2.0 & 1.00E+07 & 4.0 & 0.014 & 6.40E+07 & 1.68E+08 & 0.0 & 0.0 & 100.0 & 0.0 & 100.0 & 0.0 & 0.0 & 0.0 & 0.0 & 0.0 & 53.0 & 1.0 & 0.25 & 7.14E+08 \\ \hline
+		07\_ed & 2.0 & 1.00E+07 & 1.0 & 0.053 & 1.72E+08 & 1.80E+08 & 0.0 & 0.0 & 100.0 & 92.9 & 7.1 & 0.0 & 0.0 & 0.0 & 0.0 & 0.0 & 23.7 & 3.79 & 3.79 & 1.89E+08 \\ \hline
+		07\_ed & 2.0 & 1.00E+07 & 2.0 & 0.037 & 2.16E+08 & 2.00E+08 & 0.0 & 0.0 & 100.0 & 100.0 & 0.0 & 0.0 & 0.0 & 0.0 & 0.0 & 0.0 & 41.6 & 2.64 & 1.32 & 2.70E+08 \\ \hline
+		07\_ed & 2.0 & 1.00E+07 & 4.0 & 0.025 & 2.52E+08 & 2.08E+08 & 0.0 & 0.0 & 100.0 & 0.0 & 100.0 & 0.0 & 0.0 & 0.0 & 0.0 & 0.0 & 75.1 & 1.79 & 0.45 & 4.00E+08 \\ \hline
+		01\_es & 2.0 & 1.00E+09 & 1.0 & 10.429 & 4.43E+10 & 1.36E+10 & 7.1 & 0.5 & 92.2 & 77.0 & 15.3 & 18.2 & 1.5 & 1.1 & 7.9 & 32.1 & 24.2 & 744.93 & 744.93 & 9.59E+07 \\ \hline
+	\end{tabular}
+}
+\end{landscape}
 \end{flushleft}
 
 \section{Wnioski}

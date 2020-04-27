@@ -69,19 +69,15 @@ declare -a codez=("03_erasto_functional_static_schedule.cpp" "04_erasto_function
 declare -a threadz=("4")
 process "$codez" "$threadz"
 
-declare -a codez=("08_erasto_super_domain.cpp"  "07_erasto_domain.cpp")
-process "$codez" "$threadz"
 
-
-
-declare -a codez=("08_erasto_super_domain.cpp"  "07_erasto_domain.cpp")
 declare -a threadz=("1" "2" "4")
+declare -a codez=("07_erasto_domain.cpp" "08_erasto_super_domain.cpp")
 process "$codez" "$threadz"
 Mx=10000000
 process "$codez" "$threadz"
 
-declare -a codez=("02_most_primitive.cpp")
-declare -a threadz=("1")
+declare -a codez=("09_sqrt_domain.cpp")
+declare -a threadz=("4")
 process "$codez" "$threadz"
 
 Mx=1000000000

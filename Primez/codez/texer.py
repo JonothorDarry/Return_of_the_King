@@ -24,8 +24,8 @@ reduct={
         'L1_bound':'L1',
         'L2_bound':'L2',
         'L3_bound':'L3',
-        'DRAM_bound':'DRAMB',
-        'DTLB_bound':'DTLBB',
+        'DRAM_bound':'DRB',
+        'DTLB_bound':'DTB',
         'Effective_Cpu':'ECPU',
 }
 
@@ -36,7 +36,7 @@ codename={
         '04_erasto_functional_handmade_scheduling.cpp':'04_efhs',
         '05_erasto_functional_dynamic_schedule.cpp':'05_efds',
         '09_sqrt_domain.cpp':'09_sd',
-        '07_erasto_domain.cpp':'09_ed',
+        '07_erasto_domain.cpp':'07_ed',
         '08_erasto_super_domain.cpp':'08_esd'
 }
 if (len(sys.argv)>1):
@@ -57,8 +57,39 @@ with open(tfile, "r") as falk:
         if (s[1][-1]=='\n'):
             s[1]=s[1][:-1]
 
+        if (s[0]=='left_right:'):
+            if (s[2][-1]=='\n'):
+                s[2]=s[2][:-1]
+            lees[-1]['left']=s[1]
+            lees[-1]['right']=s[2]
+        else:
+            lees[-1][s[0]]=s[1]
 
-        lees[-1][s[0]]=s[1]
+
+mn=1000000
+for f in lees:
+    f['Elapsed']=float(f['Elapsed'])
+    if f['Elapsed']<mn:
+        mn=f['Elapsed']
+
+for f in lees:
+    f['Div']=f['Elapsed']/mn
+    f['Eff']=f['Div']/float(f['threads:'])
+    f['Avg']=(float(f['right'])-float(f['left']))/f['Elapsed']
+
+for f in lees:
+    for x in f:
+        try:
+            f[x]=float(f[x])
+            if (f[x]>10000):
+                f[x]=f"{f[x]:.2E}"
+            elif len(str(f[x]))>6:
+                f[x]=f"{f[x]:.2f}"
+        except:
+            pass
+        f[x]=str(f[x])
+
+
 
 _=[print(x) for x in lees]
 for i, x in enumerate(lees[0]):
@@ -68,6 +99,7 @@ for i, x in enumerate(lees[0]):
         x=reduct[x]
     print(neon(x), end=' ')
 print('\\\\ \\hline')
+
 
 for f in lees:
     for i, x in enumerate(f):
