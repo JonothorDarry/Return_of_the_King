@@ -11,8 +11,8 @@ void better_par_erasto_sieve(bool *res, int n, int thr){
 		else res[0]=res[1]=1;
 		return;
 	}
-	omp_set_num_threads(4);
 
+	omp_set_num_threads(thr);
 	//Pure sieve
 #pragma omp parallel for schedule(dynamic)
 	for (i=0;i<=sq;i++){

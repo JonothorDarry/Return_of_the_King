@@ -49,20 +49,27 @@
 
 \section{Wstęp}
 \begin {enumerate}
-\item Sebastian Michoń 136770: grupa dziekańska L1
-\item Marcin Zatorski 136834: grupa dziekańska L10
+\item Sebastian Michoń 136770: grupa dziekańska L1 - grupa poniedziałkowa, 8:00
+\item Marcin Zatorski 136834: grupa dziekańska L10 - grupa środowa, 13:30
 \item Wymagany termin oddania sprawozdania: 27.04.2020r.
 \item Rzeczywisty termin oddania sprawozdania: 27.04.2020r.
 \item Wersja I sprawozdania
 \item Adresy mailowe: sebastian.michon@student.put.poznan.pl, marcin.r.zatorski@student.put.poznan.pl
+\item Celem realizowanego zadanie jest współbieżne wyznaczanie liczb pierwszych i badanie wydajności kodu w zależności od rozwiązania - domenowego i funkcyjnego.
 \end {enumerate}
 
 \section{Wykorzystywany system równoległy}
 \begin {enumerate}
-	\item Kompilator: gcc 7.5.0
+	\item Kompilator: icpc (Intel C++ compiler) 19.1.1.217
+	\item Do zdobycia informacji na temat przetwarzania używałem Intel VTune'a
 	\item System operacyjny: Ubuntu 18.04
-	\item Procesor Intel(R) Core(TM) i7-4790K CPU @ 4.00GHz - 4 rdzenie, 2 wątki na 1 rdzeń: 8 procesorów logicznych i 4 fizyczne
-	\item 
+	\item Procesor Intel(R) Core(TM) i7-4790K CPU @ 4.00GHz - 4 rdzenie, 2 wątki na 1 rdzeń: 8 procesorów logicznych i 4 fizyczne. Do pomiarów został wyłączony HyperThreading, co za tym idzie używałem co najwyżej 4 procesorów logicznych. Linia pamięci podręcznej procesora ma 64 bajty. Pamięc cache ma: 
+	\begin{enumerate}
+		\item L1: 256 kilobajtów
+		\item L2: 1024 kilobajty
+		\item L3: 8192 kilobajty
+	\end{enumerate}
+	Pamięc L2 i L3 jest dostępna dla wszystkich procesorów, L1 jest lokalna dla procesora.
 	
 \end {enumerate}
 
@@ -234,17 +241,22 @@
 \section {Wprowadzenie do rezultatów pomiarów}
 \begin{enumerate}
 	\item 
-	\item VTune Profiler używa licznika zdarzeń sprzętowych do zdobycia informacji na temat przetwarzania, po czym (po przetwarzaniu) łączy te informacje w metryki np. CPI. Metryki, które zostały użyte w tym sprawozdaniu, to: 
+	\item VTune Profiler używa licznika zdarzeń sprzętowych do zdobycia informacji na temat przetwarzania, po czym (po przetwarzaniu) łączy te informacje w metryki np. CPI. Używa do zdobywania informacji PMU (performance monitoring unit) - ich liczba jest ograniczona, a sumują one informację o jednym, konkretnym zdarzeniu, przez co część zdarzeń jest raczej estymowana niż deterministycznie obliczana. Pojedynczy PMU wyliczający jakąś konkretną statystykę, wiedząc o zajściu zdarzenia inkrementuje rejestr; gdy rejestr przyjmie wartość progu próbkowania, jest on łączony z instrukcją tak, aby dowiedzieć się, po ilu zdarzeniach globalnych zaszło tyle zdarzeń danego typu (co istotne, aby statystyka/estymacja była zasadna, musi zajść odpowiednia liczba zdarzeń globalnych). Metryki, które zostały użyte w tym sprawozdaniu, to: 
+	
 	\begin{enumerate}
-		\item Clockticks - Liczba cykli procesora w trakcie przetwarzania
-		\item Instructions retired - liczba instrukcji, które zostały w pełni wykonane
-		\item Retiring - procent wydanych mikroinstrukcji, które zostały wykonane
-		\item Front-end bound - ile procent mikroinstrukcji nie zostało wykonane przez ograniczenie części wejściowej procesora, albo inaczej: jak często back-end mógł przyjąć jakąś instrukcję, ale nie otrzymał jej od front-endu. Front-end odpowiada za przyniesienie instrukcjim (fetch), zdekodowanie jej i przekazanie do back-endu.
-		\item Back-end bound - ile procent mikroinstrukcji nie zostało wykonane przez ograniczenie części wyjściowej procesora, albo incaczej: jak często back-end nie przyjmuje instrukcji od front-endu, ponieważ nie ma zasobów na ich przetworzenie. Składają się na to: Core Bound i Memory bound.
-		\item Memory bound - ile procent mikroinstrukcji mogło nie zostać wykonane przez zapotrzebowanie na załadowanie albo składowanie instrukcji - czyli narzut związany z dostępem do pamięci, której albo nie ma w cache, albo jest zabrudzona.
-		\item Core bound - ile procent mikroinstrukcji mogło nie zostać wykonane przez ograniczenia inne miż te związane z pamięcią - między innymi dzielenie.
+		\item Clockticks - Liczba cykli procesora w trakcie przetwarzania.
+		\item Instructions retired - liczba przedziałów alokacji, które zostały aztwierdzone i w pełni wykonane.
+		\item Retiring - procent przedziałów alokacji, które zostały użyte (nie zaszło ograniczenie front-endu ani back-endu) i wykonane (nie zaszła błędna spekulacja).
+		
+		\item Front-end bound - ile procent przedziałów alokacji nie zostało wykorzystanych przez ograniczenie części wejściowej procesora, albo inaczej: jak często back-end mógł przyjąć jakąś instrukcję, ale nie otrzymał jej od front-endu. Front-end odpowiada za przyniesienie instrukcji (fetch), zdekodowanie jej i przekazanie do back-endu.
+		
+		\item Back-end bound - ile procent przedziałów alokacji nie zostało wykorzystanych przez ograniczenie części wyjściowej procesora, albo incaczej: jak często back-end nie przyjmuje instrukcji od front-endu, ponieważ nie ma zasobów na ich przetworzenie. Składają się na to: Core Bound i Memory bound.
+		\item Memory bound - ile procent przedziałów alokacji mogło nie zostać wykonane przez zapotrzebowanie na załadowanie albo składowanie instrukcji - czyli narzut związany z dostępem do pamięci, której albo nie ma w cache, albo jest zabrudzona.
+		\item Core bound - ile procent przedziałów alokacji mogło nie zostać wykonane przez ograniczenia inne niż te związane z pamięcią - między innymi dzielenie czy operacje arytmetyczne na liczbach zmiennoprzecinkowych.
 		\item Effective physical core utilization - ile procent fizycznych rdzeni średnio było używanych w trakcie przetwarzania.
+		\item Metryki L1, L2, L3 bound, a także DRAM bound - procentowe dane, w ilu cyklach procesora zaszła sytuacja, w której program mimo posiadania odpowiednich danych w cache/DRAMie nie mógł przyjąć operacji.
 	\end{enumerate}
+	Wykorzystywanym trybem pracy było Microarchitecture Exploration.
 \end{enumerate}
 
 \section{Tablica wynków: kody od Pi2 do Pi6 w 3 wersjach}
@@ -337,6 +349,12 @@ gdzie Czas użycia procesorów jest sumaryczny, a Przysp. to skrót od przyspies
 	
 \end{flushleft}
 
-
+\section{Wnioski}
+\begin{enumerate}
+	\item Rozwiązanie oparte na wyznaczaniu dzielników mniejszych równych od \(\sqrt{n}\) bardzo efektywnie się zrównolegla - procesy dzielą się pracą bardzo równo, przez większość czasu działania programu wykonuje się 7-8 wątków. Zwiększenie liczby procesów \(k\)-krotnie powoduje zmniejszenie czasu przetwarzania prawie \(k\)-krotnie, przy założeniu, że nowy wątek jest wykonywany przez inny procesor logiczny. Nie zachodzi prawie wcale False Sharing, ponieważ jedyna współdzielona zmienna to tablica liczb pierwszych. Wątki nie czytają współdzielonej pamięci, co powoduje, że praktycznie nie zachodzą cache missy. Wąskim gardłem rozwiązania jest Front-End Bound - co oznacza, że są większe problemy z dostarczeniem zadania do wykonania do Back-endu niż z jego wykonaniem; a także intensywne dzielenie, zwiększające Core-Bound. Algorytm pomimo zrównoleglenia nadal jest wolniejszy od sita, ponieważ ma większą złożoność - dla \(n=10^9\) ponad 1000-krotnie wolniejszy.
+	\item Sito erastotenesa w podejściu funkcyjnym było w stanie uzyskać prawie 2-krotne przyspieszenie względem sekwencyjnego sita używając dynamic schedulingu. Co ciekawe, rozwiązania używające handmade schedulingu jest około 1.5 razy wolniejsze od rozwiązania używającego static schedulingu, pomimo tego, że ma prawie dwukrotnie wyższy współczynnik "effective physcial core utilization" - powodem jest to, że bardzo często zachodzi
+	
+	\item W podejściu 
+\end{enumerate}
 
 \end{document}
