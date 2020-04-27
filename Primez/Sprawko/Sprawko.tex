@@ -72,7 +72,7 @@
 	
 \end {enumerate}
 
-\section{Używane oznaczenia}
+\section{Używane oznaczenia, informacje ogólne}
 \begin{enumerate}
 	\item \(l\), \(r\) oznaczają kolejno lewy i prawy koniec przedziału, w którym mają zostać wyznaczone liczby pierwsze. Wewnątrz kodów używałem zamiast nich \(a\), \(n\) aby uniknąć niejednoznaczności przy korzystaniu z rekursji.
 	\item \textbf{Domknięta część sita} to taka część elementów zrównoleglonego sita, w której liczby oznaczono jako pierwsze/złożone i do której nie zostanie dokonany zapis w trakcie wykonywania sita. W szczególności, aby wypełnić równolegle sito o rozmiarze \(n\), jego część domknięta musi zawierać wszystkie liczby z przedziału \(<0;\lfloor\sqrt{n}\rfloor>\).
@@ -80,6 +80,13 @@
 	\item W kodach jeśli res[\(i\)]==1 to \(i\) jest liczbą złożoną.
 	\item Część kodów w sprawozdaniu została uproszczona względem oryginału - celem jest pokazanie koncepcji.
 	\item Jeśli oznaczono rozwiązanie problemu liczbą, to liczba ta jest prefiksem nazwy pliku, który nazwa opisuje.
+	\item Każdy przedstawiony program przyjmuje 4 kolejne argumenty: l, r, thr, prin, gdzie:
+	\begin{enumerate}
+		\item l, r oznaczają lewy i prawy koniec przedziału: \(r\le 10^9\) - ograniczenie wynikające z użycia globalnej tablicy do składowania rezultatu.
+		\item thr oznacza maksymalną liczbę utworzonych wątków (nie ma wpływu na kody sekwencyjne).
+		\item prin oznacza, czy należy wypisać wynik w formacie podanym w opisie projektu, czy nie.
+	\end{enumerate}
+	\item Jeśli odwołuję się do linii kodu, to odwołuje się do linii zgodnie z numeracją ukazaną w sprawozdaniu.
 \end{enumerate}
 
 \section{Użyte kody}
@@ -279,7 +286,7 @@ Jedyną fundamentalną różnicą pomiędzy tym kodem a zwykłym sitem domenowym
 \section{Tablica wynków: kody sit i pierwiastkowe}
 Oznaczenia i skróty:
 \begin{enumerate}
-	\item name - nazwa kodu, pierwsz cyfry jego nazwy i skrót.
+	\item name - nazwa kodu, pierwsze cyfry jego nazwy i skrót.
 	\item left, right - przedział, dla którego wykonano program.
 	\item T - liczba wątków
 	\item Elapsed - czas, który upłynął od początku przetwarzania
@@ -296,29 +303,31 @@ Oznaczenia i skróty:
 	\item Avg - liczba przetestowanych liczb w jednostce czasu.
 \end{enumerate}
 \begin{flushleft}
+\begin{landscape}
 		\rowcolors{2}{gray!25}{white}
+		\captionof{table}{Efektywność i parametry wykonania poszczególnych programów}
 		\resizebox{\columnwidth}{!}{%
 		\begin{tabular}{| l | l | l | l | l | l | l | l | l | l | l | l | l | l | l | l | l | l | l | l | l |}
 			\rowcolor{gray!50}
 			\hline
-			name & left & right & T & Elapsed & Ticks & IR & R & FEB & BEB & MB & CB & L1 & L2 & L3 & DRB & DTB & ECPU & Div & Eff & Avg \\ \hline
-			01\_es & 2.0 & 1.00E+09 & 1 & 10.312 & 4.38E+10 & 1.36E+10 & 7.2 & 0.4 & 92.2 & 76.4 & 15.8 & 18.5 & 0.2 & 9.2 & 0.0 & 30.7 & 24.2 & 1.0 & 1.0 & 9.70E+07 \\ \hline
-			03\_efss & 2.0 & 1.00E+09 & 2 & 10.448 & 4.96E+10 & 1.44E+10 & 6.8 & 0.4 & 92.5 & 76.8 & 15.7 & 16.3 & 0.0 & 12.1 & 0.0 & 32.7 & 27.2 & 0.99 & 0.49 & 9.57E+07 \\ \hline
-			03\_efss & 2.0 & 1.00E+09 & 4 & 10.094 & 6.11E+10 & 1.62E+10 & 7.4 & 0.3 & 91.9 & 74.7 & 17.2 & 7.8 & 0.0 & 18.8 & 0.0 & 37.5 & 34.8 & 1.02 & 0.26 & 9.91E+07 \\ \hline
-			04\_efhs & 2.0 & 1.00E+09 & 2 & 10.026 & 5.85E+10 & 1.22E+10 & 4.4 & 0.8 & 94.7 & 78.2 & 16.5 & 6.2 & 1.2 & 20.3 & 0.0 & 36.4 & 33.3 & 1.03 & 0.51 & 9.97E+07 \\ \hline
-			04\_efhs & 2.0 & 1.00E+09 & 4 & 8.666 & 1.14E+11 & 1.43E+10 & 2.9 & 0.9 & 95.8 & 78.0 & 17.8 & 0.0 & 0.3 & 29.4 & 0.0 & 41.8 & 77.8 & 1.19 & 0.30 & 1.15E+08 \\ \hline
-			05\_efds & 2.0 & 1.00E+09 & 2 & 7.417 & 6.24E+10 & 1.39E+10 & 5.3 & 0.7 & 93.8 & 76.8 & 17.0 & 19.0 & 0.2 & 9.6 & 0.0 & 35.5 & 48.1 & 1.39 & 0.70 & 1.35E+08 \\ \hline
-			05\_efds & 2.0 & 1.00E+09 & 4 & 6.654 & 1.07E+11 & 1.47E+10 & 3.2 & 0.9 & 95.5 & 78.3 & 17.2 & 5.9 & 0.2 & 22.3 & 0.0 & 35.7 & 95.7 & 1.55 & 0.39 & 1.50E+08 \\ \hline
-			07\_ed & 2.0 & 1.00E+09 & 1 & 11.037 & 4.68E+10 & 1.91E+10 & 9.2 & 0.9 & 89.7 & 72.9 & 16.7 & 19.8 & 2.6 & 10.0 & 0.0 & 34.7 & 24.2 & 0.93 & 0.93 & 9.06E+07 \\ \hline
-			07\_ed & 2.0 & 1.00E+09 & 2 & 9.801 & 8.25E+10 & 1.97E+10 & 5.3 & 0.6 & 93.9 & 73.2 & 20.7 & 8.2 & 0.0 & 0.0 & 22.6 & 36.6 & 48.1 & 1.05 & 0.53 & 1.02E+08 \\ \hline
-			07\_ed & 2.0 & 1.00E+09 & 4 & 9.013 & 1.45E+11 & 1.96E+10 & 3.9 & 0.5 & 95.4 & 72.8 & 22.6 & 18.7 & 0.0 & 11.2 & 0.0 & 33.8 & 95.5 & 1.14 & 0.29 & 1.11E+08 \\ \hline
-			08\_esd & 2.0 & 1.00E+09 & 1 & 1.498 & 6.33E+09 & 1.79E+10 & 49.2 & 14.4 & 26.2 & 20.4 & 5.8 & 19.5 & 4.7 & 1.7 & 0.0 & 1.8 & 24.2 & 6.88 & 6.88 & 6.68E+08 \\ \hline
-			08\_esd & 2.0 & 1.00E+09 & 2 & 0.775 & 6.35E+09 & 1.79E+10 & 49.2 & 12.0 & 29.0 & 20.1 & 8.8 & 18.8 & 1.4 & 1.1 & 0.0 & 1.2 & 47.2 & 13.31 & 6.65 & 1.29E+09 \\ \hline
-			08\_esd & 2.0 & 1.00E+09 & 4 & 0.429 & 6.50E+09 & 1.80E+10 & 57.6 & 10.8 & 20.0 & 12.2 & 7.8 & 17.5 & 0.0 & 2.3 & 0.0 & 0.9 & 90.7 & 24.04 & 6.01 & 2.33E+09 \\ \hline
-			09\_sd & 2.0 & 1.00E+07 & 1 & 3.84 & 1.60E+10 & 1.76E+10 & 46.4 & 41.5 & 11.6 & 8.4 & 3.2 & 26.3 & 0.0 & 0.0 & 0.0 & 0.0 & 24.9 & 2.69 & 2.69 & 2.60E+06 \\ \hline
-			09\_sd & 2.0 & 1.00E+07 & 4 & 1.291 & 1.98E+10 & 2.16E+10 & 39.0 & 28.1 & 31.6 & 28.1 & 3.5 & 21.4 & 0.0 & 0.0 & 0.0 & 0.1 & 91.2 & 7.99 & 2.00 & 7.75E+06 \\ \hline
+			name & left & right & T & Elapsed[\(s\)] & Ticks & IR & R[\(\%\)] & FEB[\(\%\)] & BEB[\(\%\)] & MB[\(\%\)] & CB[\(\%\)] & L1[\(\%\)] & L2[\(\%\)] & L3[\(\%\)] & DRB[\(\%\)] & DTB[\(\%\)] & ECPU[\(\%\)] & Div & Eff & Avg[\(\frac{1}{s}\)] \\ \hline
+			01\_es & 2 & 1.00E+09 & 1 & 10.312 & 4.38E+10 & 1.36E+10 & 7.2 & 0.4 & 92.2 & 76.4 & 15.8 & 18.5 & 0.2 & 9.2 & 0.0 & 30.7 & 24.2 & 1.0 & 1.0 & 9.70E+07 \\ \hline
+			03\_efss & 2 & 1.00E+09 & 2 & 10.448 & 4.96E+10 & 1.44E+10 & 6.8 & 0.4 & 92.5 & 76.8 & 15.7 & 16.3 & 0.0 & 12.1 & 0.0 & 32.7 & 27.2 & 0.99 & 0.49 & 9.57E+07 \\ \hline
+			03\_efss & 2 & 1.00E+09 & 4 & 10.094 & 6.11E+10 & 1.62E+10 & 7.4 & 0.3 & 91.9 & 74.7 & 17.2 & 7.8 & 0.0 & 18.8 & 0.0 & 37.5 & 34.8 & 1.02 & 0.26 & 9.91E+07 \\ \hline
+			04\_efhs & 2 & 1.00E+09 & 2 & 10.026 & 5.85E+10 & 1.22E+10 & 4.4 & 0.8 & 94.7 & 78.2 & 16.5 & 6.2 & 1.2 & 20.3 & 0.0 & 36.4 & 33.3 & 1.03 & 0.51 & 9.97E+07 \\ \hline
+			04\_efhs & 2 & 1.00E+09 & 4 & 8.666 & 1.14E+11 & 1.43E+10 & 2.9 & 0.9 & 95.8 & 78.0 & 17.8 & 0.0 & 0.3 & 29.4 & 0.0 & 41.8 & 77.8 & 1.19 & 0.30 & 1.15E+08 \\ \hline
+			05\_efds & 2 & 1.00E+09 & 2 & 7.417 & 6.24E+10 & 1.39E+10 & 5.3 & 0.7 & 93.8 & 76.8 & 17.0 & 19.0 & 0.2 & 9.6 & 0.0 & 35.5 & 48.1 & 1.39 & 0.70 & 1.35E+08 \\ \hline
+			05\_efds & 2 & 1.00E+09 & 4 & 6.654 & 1.07E+11 & 1.47E+10 & 3.2 & 0.9 & 95.5 & 78.3 & 17.2 & 5.9 & 0.2 & 22.3 & 0.0 & 35.7 & 95.7 & 1.55 & 0.39 & 1.50E+08 \\ \hline
+			07\_ed & 2 & 1.00E+09 & 1 & 11.037 & 4.68E+10 & 1.91E+10 & 9.2 & 0.9 & 89.7 & 72.9 & 16.7 & 19.8 & 2.6 & 10.0 & 0.0 & 34.7 & 24.2 & 0.93 & 0.93 & 9.06E+07 \\ \hline
+			07\_ed & 2 & 1.00E+09 & 2 & 9.801 & 8.25E+10 & 1.97E+10 & 5.3 & 0.6 & 93.9 & 73.2 & 20.7 & 8.2 & 0.0 & 0.0 & 22.6 & 36.6 & 48.1 & 1.05 & 0.53 & 1.02E+08 \\ \hline
+			07\_ed & 2 & 1.00E+09 & 4 & 9.013 & 1.45E+11 & 1.96E+10 & 3.9 & 0.5 & 95.4 & 72.8 & 22.6 & 18.7 & 0.0 & 11.2 & 0.0 & 33.8 & 95.5 & 1.14 & 0.29 & 1.11E+08 \\ \hline
+			08\_esd & 2 & 1.00E+09 & 1 & 1.498 & 6.33E+09 & 1.79E+10 & 49.2 & 14.4 & 26.2 & 20.4 & 5.8 & 19.5 & 4.7 & 1.7 & 0.0 & 1.8 & 24.2 & 6.88 & 6.88 & 6.68E+08 \\ \hline
+			08\_esd & 2 & 1.00E+09 & 2 & 0.775 & 6.35E+09 & 1.79E+10 & 49.2 & 12.0 & 29.0 & 20.1 & 8.8 & 18.8 & 1.4 & 1.1 & 0.0 & 1.2 & 47.2 & 13.31 & 6.65 & 1.29E+09 \\ \hline
+			08\_esd & 2 & 1.00E+09 & 4 & 0.429 & 6.50E+09 & 1.80E+10 & 57.6 & 10.8 & 20.0 & 12.2 & 7.8 & 17.5 & 0.0 & 2.3 & 0.0 & 0.9 & 90.7 & 24.04 & 6.01 & 2.33E+09 \\ \hline
+			09\_sd & 2 & 1.00E+07 & 1 & 3.84 & 1.60E+10 & 1.76E+10 & 46.4 & 41.5 & 11.6 & 8.4 & 3.2 & 26.3 & 0.0 & 0.0 & 0.0 & 0.0 & 24.9 & - & 2.69 & 2.60E+06 \\ \hline
+			09\_sd & 2 & 1.00E+07 & 4 & 1.291 & 1.98E+10 & 2.16E+10 & 39.0 & 28.1 & 31.6 & 28.1 & 3.5 & 21.4 & 0.0 & 0.0 & 0.0 & 0.1 & 91.2 & - & 2.00 & 7.75E+06 \\ \hline
 	\end{tabular}
-}
+}\end{landscape}
 \end{flushleft}
 
 \begin{figure}[h!]
@@ -361,19 +370,21 @@ Oznaczenia i skróty:
 
 \section{Wnioski}
 \begin{enumerate}
-	\item Rozwiązanie oparte na wyznaczaniu dzielników mniejszych równych od \(\sqrt{n}\) bardzo efektywnie się zrównolegla - procesy dzielą się pracą bardzo równo, przez większość czasu działania programu wykonuje się 7-8 wątków. Zwiększenie liczby procesów \(k\)-krotnie powoduje zmniejszenie czasu przetwarzania prawie \(k\)-krotnie, przy założeniu, że nowy wątek jest wykonywany przez inny procesor logiczny. Nie zachodzi prawie wcale False Sharing, ponieważ jedyna współdzielona zmienna to tablica liczb pierwszych. Wątki nie czytają współdzielonej pamięci, co powoduje, że praktycznie nie zachodzą cache missy. Wąskim gardłem rozwiązania jest Front-End Bound - co oznacza, że są większe problemy z dostarczeniem zadania do wykonania do Back-endu niż z jego wykonaniem; a także intensywne dzielenie, zwiększające Core-Bound. Algorytm pomimo zrównoleglenia nadal jest wolniejszy od sekwencyjnego sita, ponieważ ma większą złożoność - dla \(n=10^9\) ponad 1000-krotnie wolniejszy.
 
-	\item Sito Erastotenesa w podejściu funkcyjnym było w stanie uzyskać około \(\frac{2}{3}\) czasu działania sita sekwencyjnego sita używając dynamic schedulingu. Co ciekawe, rozwiązania używające handmade schedulingu jest około \(\frac{1}{9}\) razy wolniejsze od rozwiązania używającego dynamic schedulingu (dla 4 rdzeni), co jest skorelowane z współczynnikiem "effective physcial core utilization" - wynika stąd, że sito używające dynamic schedulingu pomimo narzutu związanego z synchronizacją nadal jest szybsze od ręcznego przydziału liczb do procesów. Wskazuje to na niedoskonałość heurystyki, którą użyto - nie uwzględniono cache procesora - procesy, które będą skreślać niskie liczby, częściej będą zaliczały trafienie w lokalnym cache. Obserwacja ta została wykorzystana do konstrukcji kodu 08. Zgodnie z oczekiwaniami, kod używający statycznego przydziału iteracji do procesu ma bardzo niski współczynnik efektywnego użycia cpu. Co ciekawe, kod ten ma też mniejszy o 2 punkty procentowe Memory Bound niż 2 pozostałe sita w podejściu funkcyjnym - wynika to z mniejszej ilości cache missów, jako że tylko jeden wątek ma dla siebie całe cache przez większość czasu trwania programu.
+	\item Rozwiązanie oparte na wyznaczaniu dzielników mniejszych równych od \(\sqrt{n}\) bardzo efektywnie się zrównolegla - procesy dzielą się pracą bardzo równo, dla maksymalnej liczby wątków przez większość czasu działania programu wykonują się wszystkie wątki, ponieważ średnio jest używanych ponad 90\% zasobów procesora (dla maksymalnej liczby 4 wątków). Zwiększenie liczby procesów \(k\)-krotnie powoduje zmniejszenie czasu przetwarzania prawie \(k\)-krotnie (dla \(k=4\) zachodzi ponad \(\frac{7}{2}\)-krotne zwiększenie wydajności), przy założeniu, że nowy wątek jest wykonywany przez inny procesor logiczny. Nie zachodzi prawie wcale False Sharing, ponieważ jedyna współdzielona zmienna to tablica liczb pierwszych. Wątki nie czytają współdzielonej pamięci, co powoduje, że bardzo rzadko zachodzą cache missy - wynika to z niskiego Memory Bounda, 9-krotnie niższego niż w sekwencyjnym sicie. Wąskim gardłem rozwiązania jest Front-End Bound, najwyższy spośród wszystkich (poza 08) rozwiązań - co oznacza, że są większe problemy z dostarczeniem zadania do wykonania do Back-endu niż z jego wykonaniem; a także intensywne dzielenie, zwiększające Core-Bound. Algorytm pomimo zrównoleglenia nadal jest wolniejszy od sekwencyjnego sita, ponieważ ma większą złożoność - dla \(n=10^9\) ponad 10-krotnie wolniejszy, dlatego nie został uwzględniony w sprawozdaniu z maksymalnymi wartościami \(l, r\).
+
+	\item Sito Erastotenesa w podejściu funkcyjnym było w stanie uzyskać około \(\frac{2}{3}\) czasu działania sekwencyjnego sita używając dynamic schedulingu (Kod 05, linia 51). Co ciekawe, rozwiązania używające handmade schedulingu (kod 04) jest około \(\frac{1}{9}\) razy wolniejsze od rozwiązania używającego dynamic schedulingu (dla 4 rdzeni), co jest skorelowane z współczynnikiem "effective physcial core utilization" - wynika stąd, że sito używające dynamic schedulingu pomimo narzutu związanego z synchronizacją nadal jest szybsze od ręcznego przydziału liczb do procesów, który nie przydzielał perfekcyjnie procesów do zadań, co widać na 1. obrazku. Wskazuje to na niedoskonałość heurystyki, której użyto - nie uwzględniono cache procesora - procesy, które będą skreślać niskie liczby, częściej będą zaliczały trafienie w lokalnym cache. Obserwacja ta została wykorzystana do konstrukcji kodu 08. Zgodnie z oczekiwaniami, kod używający statycznego przydziału iteracji do procesu ma bardzo niski współczynnik efektywnego użycia cpu - dla 4 wątków prawie 3 razy niższy niż ten z dynamic schedulingiem. Co ciekawe, kod ten ma też mniejszy o 2 punkty procentowe Memory Bound niż 2 pozostałe sita w podejściu funkcyjnym - wynika to z mniejszej ilości cache missów, jako że tylko jeden wątek ma dla siebie całe cache przez większość czasu trwania programu.
 	
 	\item Efektywność standardowego sita domenowego pozostawia wiele do życzenia - jest ono około \(\frac{2}{7}\) razy wolniejsze od sita funkcyjnego z dynamic schedulingiem dla tej samej liczby wątków; problem wydajnościowy zapewne tkwi w zarządzaniu pamięcią; z zebranych danych wynika, że ten algorytm jako jedyny blokował się częściej niż 0.1\% razy na przedziale alokacji, mając znaleziony segment pamięci w DRAMie. Algorytm ponadto miał większy narzut związany z core boundem - najprawdopodobniej wynika to z intensywnego używania slotów procesora. Z danych można wyciągnąć wniosek, że algorytm użytkował wszystke procesory w miarę równomiernie, jednak zwiększenie liczby procesorów nie powoduje zmniejszenia czasu przetwarzania o więcej niż \(\frac{1}{12}\). Wszystkie te dane i natura algorytmu skłaniają do sformułowania wniosku: kod sita domenowego jest wolny w porównaniu do funkcyjnych, ponieważ procesy zapełniają globalny cache własnymi częściami sita, a jako że każdy wątek ma inny segment, te części pamięci się nie pokrywają, często zachodzą Cache Missy, co spowalnia algorytm mimo nieomal pełnego wykorzystania procesorów. Problem ten nie zachodzi w takim wymiarze dla sita funkcyjnego, ponieważ segmenty pamięci mogą się pokrywać, co za tym idzie częściej zajdzie cache hit, a false sharing nie jest dużym narzutem na efektywności powyższych kodów. Aby sprawdzić zasadność tej tezy, stworzony został kod super-sita domenowego z przesuwaniem o liczbę niższą niż ilość danych, która zmieści się w L1 cache jednego rdzenia procesora - kod ten powinien być znacznie szybszy i efektywnie zmniejszać czas trwania przetwarzania.
 	
+	\item Najbardziej efektywne jest ulepszone sito domenowe - zrównolegla się bez żadnego problemu (dla \(k\) wątków i \(t_{sequential} =\) czas dla 1 wątku, czas przetwarzania to \(\frac{t_{sequential}}{k}\) - rysunek 3. pokazuje, jak efektywnie wykorzystywano rdzenie procesora), a czas przetwarzania dla 1 wątku jest 7 razy krótszy niż czas przetwarzania standardowego sita. Wynika to z zapewnienia tego, że większość operacji w pamięci zaliczy trafienie już na etapie L1 cache - nie wynika to z pojedynczej linii, ale z konstrukcji algorytmu i iterowania się w batchach co 32000 intów, czyli 128.000 bajtów, które mogą się zmieścić w L1 cache. Ponadto sam algorytm nie generuje dużo większego narzutu niż zwykłe sito, chociaż złożoność ma uzależnioną od liczby, o którą się przesuwam - jeśli można ją oszacować przez co najmniej \(O(\sqrt{n})\) dla \(n\)- rozmiaru sita, to sito wykona co najwyżej \(O(\sqrt{n})*O(\sqrt{n})=O(n)\) "pustych przelotów" - iteracji, w trakcie których nie przejdę do skreślania liczb pierwszych (ponieważ liczba liczb pierwszych \(p\le\sqrt{n}\) jest ograniczona przez \(\sqrt{n}\), a liczba iteracji przez odwrotność przesunięcia sita pomnożoną przez rozmiar sita - czyli \(O(\sqrt{n})\). To ogranicza złożoność algorytmu do złożoności standardowego sita. Procesy nadal dzielą między sobą po równo liczbę elementów części otwartej sita, co za tym idzie algorytm jest najlepszy zarówno w kontekście zrównoleglania, jak i efektywności.
 	
-	\item Najbardziej efektywne jest ulepszone sito domenowe - zrównolegla się bez żadnego problemu (dla \(k\) wątków i \(t_{sequential} =\) czas dla 1 wątku, czas przetwarzania to \(\frac{t_{sequential}}{k}\)), a czas przetwarzania na 1 wątku jest 8 razy krótszy niż czas przetwarzania standardowego sita. Wynika to z zapewnienia tego, że większość operacji w pamięci zaliczy trafienie już na etapie L1 cache - nie wynika to z pojedynczej linii, ale z konstrukcji algorytmu i iterowania się w batchach co 32000 intów, czyli 128.000 bajtów, które mogą się zmieścić w L1 cache. Ponadto sam algorytm nie generuje dużo większego narzutu niż zwykłe sito, chociaż złożoność ma uzależnioną od liczby, o którą się przesuwa - jeśli można ją oszacować przez co najmniej \(O(\sqrt{n})\) dla \(n\)- rozmiaru sita, to sito wykona co najwyżej \(O(\sqrt{n})*O(\sqrt{n})=O(n)\) "pustych przelotów" - iteracji, w trakcie których nie przejdzie do skreślania liczb pierwszych (ponieważ liczba liczb pierwszych \(p\le\sqrt{n}\) jest ograniczona przez \(\sqrt{n}\), a liczba iteracji przez odwrotność przesunięcia sita pomnożoną przez rozmiar sita - czyli \(O(\sqrt{n})\). To ogranicza złożoność algorytmu do złożoności standardowego sita. Procesy nadal dzielą między sobą po równo liczbę elementów części otwartej sita, co za tym idzie algorytm jest najlepszy zarówno w kontekście zrównoleglania, jak i efektywności.
+	\item W większości rozwiązań dominują ograniczenia pamięciowe, związane z wysokim Memory Boundem, pomiędzy 70\% a 80\% - w tych kodach procent przedziałów alokacji, które zostały zatwierdzone jest niższy niż 10\%. Wyjątkami są kody 09 i 08. Zarówno w kodzie opartym na intensywnym dzieleniu (09), jak i w kodzie ulepszonego sita domenowego (08) ograniczenia związane z front-end boundem są zbliżone, a czasem nawet wyższe od ograniczeń związanych z back-endem, w tym pamięcią.
 	
-	\item {O ile w rozwiązaniu 08 nie }
+	\item Jedynie kod 08 był wiele efektywniejszy od pozostałych kodów (ponad 24 razy szybszy niż sekwencyjny na 4 rdzeniach). Kod ten miał nieomal niezmienną efektywność (pomiędzy 6 a 7) niezależnie od liczby procesów, w przeciwieństwie do standardowego sita domenowego (07) - które traciło na efektywności przy wzroście liczby procesów mimo wykorzystania procesora rzędu 95\%. Kody funkcyjne także traciły na efektywności razem ze wzrostu liczby używanych wątków, w efekcie ich przyspieszenie względem sekwencyjnego kodu nie wzrastało do wartości wyższych niż 2.
 \end{enumerate}
 
 \section{Podsumowanie}
-	Celem tego projektu było przedstawienie efektywnego algorytmu równoległego do znajdywania liczb pierwszych w przedziale. Cel ten został zrealizowany w kodzie 08, pozostałe pokazywały pewne własności przetwarzania równoległego, które naprowadzały na sposób realizacji tego celu.
+	Celem tego projektu było przedstawienie efektywnego algorytmu równoległego do znajdywania liczb pierwszych w przedziale. Cel ten został zrealizowany w kodzie 08, pozostałe pokazywały pewne własności przetwarzania równoległego, które naprowadzały na sposób realizacji tego celu. Można także zastosować podobną optymalizację dla wersji funkcyjnej kodu, ale aby uzyskać satysfakcjonującą prędkość przetwarzania należałoby aktualizować 4 tablice - to redukuje problem false sharingu. Problemem z tym rozwiązaniem jest brak dostępnej pamięci - należałoby zaalowkować jej ~5 GB, co nie jest możliwe na używanym do realizacji zadania sprzęcie.
 
 \end{document}
