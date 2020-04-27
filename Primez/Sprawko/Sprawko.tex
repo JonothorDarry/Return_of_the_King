@@ -3,17 +3,16 @@
 \usepackage[T1]{fontenc}
 \usepackage{lscape} 
 \usepackage{lmodern}
-\usepackage[svgnames]{xcolor}
 \usepackage[a4paper,bindingoffset=0.2in,%
             left=0.5in,right=0.5in,top=0.5in,bottom=1in,%
             footskip=.25in]{geometry}
-\pagenumbering{gobble}
 \usepackage[colorlinks=true, linkcolor=Black, urlcolor=Blue]{hyperref}
 \usepackage{graphicx}
 \usepackage{subcaption}
 \usepackage{listings}
 \usepackage{color}
-\usepackage[svgnames]{xcolor}
+\usepackage[table]{xcolor}
+\definecolor{lightgray}{gray}{0.9}
 
 \definecolor{codegreen}{rgb}{0,0.6,0}
 \definecolor{codegray}{rgb}{0.5,0.5,0.5}
@@ -75,11 +74,12 @@
 
 \section{Używane oznaczenia}
 \begin{enumerate}
-	\item \(l\), \(r\) oznaczają kolejno lewy i prawy koniec przedziału, w którym mają zostać wyznaczone liczby pierwsze.
+	\item \(l\), \(r\) oznaczają kolejno lewy i prawy koniec przedziału, w którym mają zostać wyznaczone liczby pierwsze. Wewnątrz kodów używałem zamiast nich \(a\), \(n\) aby uniknąć niejednoznaczności przy korzystaniu z rekursji.
 	\item \textbf{Domknięta część sita} to taka część elementów zrównoleglonego sita, w której liczby oznaczono jako pierwsze/złożone i do której nie zostanie dokonany zapis w trakcie wykonywania sita. W szczególności, aby wypełnić równolegle sito o rozmiarze \(n\), jego część domknięta musi zawierać wszystkie liczby z przedziału \(<0;\lfloor\sqrt{n}\rfloor>\).
 	\item \textbf{Otwarta część sita} to taka część elementów zrównoleglonego sita, w której liczby nadal mogą zostać odznaczone jako złożone.
 	\item W kodach jeśli res[\(i\)]==1 to \(i\) jest liczbą złożoną.
 	\item Część kodów w sprawozdaniu została uproszczona względem oryginału - tutaj moim celem jest pokazanie koncepcji.
+	\item Jeśli oznaczam rozwiązanie problemu liczbą, to liczba ta jest prefiksem nazwy pliku, który nazwa opisuje.
 \end{enumerate}
 
 \section{Użyte kody}
@@ -94,13 +94,12 @@
 	\end{lstlisting}
 	Celem kodu jest jedynie pokazanie koncepcji; nie zachodzi wyścig ani nie ma synchronizacji, ponieważ jest jeden wątek.
 	\item 02\_most\_primitive.cpp - Kod sekwencyjny, który szuka dzielnika \(d\) liczby \(x\) pośród liczb mniejszych równych jej pierwiastkowi: \(d \le \sqrt{x}\). Rozwiązanie to działa w złożoności \(O((r-l)*\sqrt{r})\). Sprawdzałem podzielność także dla liczb, które nie są pierwsze, aby nie używać żadnych tablic poza tablicą znalezionych liczb pierwszych - celem jest pokazanie kodu wykorzystującego w jak najmniejszym stopniu tablice, co za tym idzie mającego niewielkie narzuty związane z dostępem do pamięci.
-	\begin{lstlisting}[style=mystyle, caption= Rozwiązanie pierwiastkowe][language=C]
-	for (i=l;i<=r;i++){
+	\begin{lstlisting}[style=mystyle, caption= Rozwiązanie pierwiastkowe][language=C]	
+	for (i=a;i<=n;i++){
 		for (j=2;j*j<=i;j++){
 			if (i%j==0) {
 				res[i]=1;
 				break;
-			}
 		}
 	}
 	\end{lstlisting}
@@ -114,7 +113,7 @@
 		for (j=max(i*i, j); j<=n; j+=i) res[j]=1;
 	}
 	\end{lstlisting}
-	Gdzie \(sq\) oznacza \(\lfloor(\sqrt{n})\rfloor\), a \(sv\) to najmniejsza liczba większa równa \(sq+1\) i \(i^2\) podzielna przez \(i\). Własności tego kodu:
+	Gdzie \(sq\) oznacza \(\lfloor(\sqrt{n})\rfloor\), a \(j\) jest wyznaczane jako najmniejsza liczba większa równa \(sq+1\) i \(i^2\) podzielna przez \(i\). Własności tego kodu:
 	\begin{enumerate}
 		\item Dyrektywa powyżej tworzy zbiór wątków, którym przydziela w przybliżeniu równy podzbiór części domkniętej sita; co istotne, przy tak sformułowanym kodzie wątek będzie wykonywał kolejne iteracje - na przykład 1. wątek może wykonać je dla i=2, 3, 5, 7, a 2. wątek dla 11, 13, 17, 19. Jest to nieefektywne, ponieważ procesy dostaną taką samą ilość liczb, którymi będą odsiewać liczby z otwartej części sita, a proces, który dostanie najmniejsze liczby wykona najwięcej operacji: w powyższym przypadku, 1. wątek wykona nieco mniej niż \(\frac{n}{2}+\frac{n}{3}+\frac{n}{5}+\frac{n}{7}\) operacji oznaczenia liczby (gdzie \(n\) to rozmiar sita - "nieco mniej" wynika z tego, że nie odznaczam liczb \(x<\sqrt{n})\)), a 2. wątek \(\frac{n}{11}+\frac{n}{13}+\frac{n}{17}+\frac{n}{19}\) - czyli dużo mniej.
 		\item Nie zachodzi wyścig (rozumiany jako zależność działania programu od kolejności wykonywania wątków), ponieważ wątki modyfikują tylko część otwartą sita, ponadto jeśli zmieniam wartość jakiegoś elementu tablicy, w której zaznaczam liczby pierwsze, to mogę tylko oznaczyć liczbę jako złożoną; co za tym idzie, jeśli liczba zostanie oznaczona przez kilka wątków jako liczba złożona, to niezależnie od tego, który z nich oznaczy ją jako pierwszy, który później nie zajdzie wyścig. Nie zmieniam w pętli żadnej zmiennej globalnej poza tablicą pierwszości.
@@ -124,7 +123,7 @@
 	\item 04\_erasto\_functional\_handmade\_scheduling.cpp - kod równoległy, koncepcja sita, podejście funkcyjne. Kod jest analogiczny do poprzedniego, ale iteracje są ręcznie przypisywane do każdego wątku - Najpierw wyliczam sumę \(sum=\frac{1}{2}+\frac{1}{3}+\frac{1}{5}+\frac{1}{7}+...+\frac{1}{np}\), gdzie \(np\) to najwyższa liczba pierwsza \(np\le\sqrt{n}\)  i średnią liczbę operacji zmniejszoną \(n\)-krotnie, które mają być wykonywane przez proces: \(partsum=\frac{sum}{proc}\), gdize \(proc\) to liczba procesów. Następnie każdemu procesowi przydzielam w osobnej tablicy liczby pierwsze, którymi będzie skreślał elementy tablicy w ten sposób, że:
 	\begin{enumerate}
 		\item \(i\)-ty proces dostanie \(i\)-tą liczbę pierwszą
-		\item następnie proces będzie dobierał sobie nieprzydzielone liczby pierwsze począwszy od \(np\) do momentu, w którym jego szacowana liczba operacji nie przekroczy \(psum\)
+		\item następnie będę dobierał procesowi nieprzydzielone liczby pierwsze począwszy od \(np\) do momentu, w którym jego szacowana liczba operacji nie przekroczy \(psum\)
 	\end{enumerate}
 	Kod odpowiadający za przydział liczb pierwszych do tablicy procesu:
 	\begin{lstlisting}[style=mystyle, caption=  Ręczny scheduling sita funkcyjnego][language=C]
@@ -156,7 +155,7 @@
 		}
 	}
 	\end{lstlisting}
-	Dzięki powyższemu rozwiążę problem przedstawiony w części (a) poprzedniego rozwiązania - procesy będą względnie równo dzielić się pracą bez dodatkowego narzutu związanego z synchronizacją, przy czym procesy, które wezmą najniższe liczby pierwsze (2, 3, czasem 5) nadal wykonałyby największą pracę, ponieważ dla \(n<500000000 \land proc=8\) nadal zachodzi \(\frac{1}{2}\ge psum)\) - Analogicznie dla 3. Problemem z tą heurystyką jest nieuwzględnienie cache missów: odznaczanie liczb złożonych za pomocą liczby 2 będzie miało dużo rzadziej cache missa niż odznacznie liczb złożonych za pomocą za pomocą liczby 8387, a następnie kolejnych 10 liczb pierwszych, za każdym razem wymieniając dane w cache. Pozostałe części rozwiązania - (b), (c), (d) są identyczne dla tego kodu.
+	Dzięki powyższemu rozwiążę problem przedstawiony w części (a) poprzedniego rozwiązania - procesy będą względnie równo dzielić się pracą bez dodatkowego narzutu związanego z synchronizacją, przy czym procesy, które wezmą najniższe liczby pierwsze (2, 3, czasem 5) nadal wykonałyby największą pracę, ponieważ dla \(n<500000000 \land proc=4\) nadal zachodzi \(\frac{1}{2}\ge psum)\) - Analogicznie dla 3. Problemem z tą heurystyką jest nieuwzględnienie cache missów: odznaczanie liczb złożonych za pomocą liczby 2 będzie miało dużo rzadziej cache missa niż odznacznie liczb złożonych za pomocą za pomocą liczby 8387, a następnie kolejnych 10 liczb pierwszych, za każdym razem wymieniając dane w cache. Pozostałe części rozwiązania - (b), (c), (d) są identyczne dla tego kodu.
 	\item 05\_erasto\_functional\_dynamic\_schedule.cpp - działa tak jak kod (3), ale używa innej dyrektywy:
 	\begin{lstlisting}[style=mystyle, caption= Sito funkcyjne z dynamic schedulingiem][language=C]
 	#pragma omp parallel for schedule(dynamic)
@@ -190,7 +189,7 @@
 		\item Wątki będą modyfikowały współdzielone L2 i L3 cache - co za tym idzie, często będą zachodziły cache-missy, ponieważ L2 i L3 cache będą często zmieniały dane - w praktyce każdy wątek będzie modyfikował zupełnie inne części tablicy, które będą stale się zmieniać (inaczej niż np. w przypadku, w którym 1 wątek modyfikuje co 2. element tablicy), a nie zmieszczą się one w L1 cache (mogącej pomieścić 128KB danych nie będących instrukcjami).
 	\end{enumerate}
 
-	\item 08\_erasto\_super\_domain.cpp - usunięty został problem częstych cache missów przez to, że wątek aktualizuje w 1 pętli co najwyżej 32000 kolejne elementy sita plus kilka dodatkowych; W moim algorytmie utrzymuję tablicę liczb pierwszych modyfikowaną przed stworzeniem wątków wartościami \(x\le \sqrt{n}\); Każdy wątek aktualizuje kolejne liczby pierwsze od poprzedniej oznaczonej albo startowej, dopóki nie przekroczy \(left+32000\) albo prawej granicy podzbioru, który wolno mi modyfikować. (\(left\) to początek iteracji), wtedy jest to jego ostatnia iteracja w tym batchu; przechodzę do kolejnej liczby powtarzając proces; w końcu, po przejściu całej tablicy liczb pierwszych, wracam do 1. liczby pierwszej i aktualizuje \(left+=32000\). Powtarzam proces dopóki każda liczba pierwsza nie przekroczy prawej granicy zadanego ciągu.
+	\item 08\_erasto\_super\_domain.cpp - usunięty został problem częstych cache missów przez to, że wątek aktualizuje w 1 pętli co najwyżej 32000 kolejne elementy sita; W moim algorytmie utrzymuję tablicę liczb pierwszych modyfikowaną przed stworzeniem wątków wartościami \(x\le \sqrt{n}\); Każdy wątek aktualizuje kolejne liczby pierwsze od poprzedniej oznaczonej albo startowej, dopóki nie przekroczy \(left+32000\) albo prawej granicy podzbioru, który wolno mi modyfikować. (\(left\) to początek iteracji), wtedy jest to jego ostatnia iteracja w tym batchu; przechodzę do kolejnej liczby powtarzając proces; w końcu, po przejściu całej tablicy liczb pierwszych, wracam do 1. liczby pierwszej i aktualizuje \(left+=32000\). Powtarzam proces dopóki każda liczba pierwsza nie przekroczy prawej granicy zadanego ciągu.
 	\begin{lstlisting}[style=mystyle, caption= Sito funkcyjne z dynamic schedulingiem][language=C]
 	ineo=0;
 	for (int vi=0;vi<=sq;vi++){
@@ -213,8 +212,7 @@
 			for (ji=0;ji<ineo;ji++){
 				i=neoprimez[ji];
 				if (dp[thnum][i]==0) dp[thnum][i]=max(modal(left, i), modal(a, i));
-				for (j=dp[thnum][i]; j<=right;j+=i){
-					if (j>=curfun) break;
+				for (j=dp[thnum][i]; j<curfun && j<=right;j+=i){
 					p[j]=1;	
 				}
 				if (j>right) finished++;
@@ -228,7 +226,7 @@ Jedyną fundamentalną różnicą pomiędzy tym kodem a zwykłym sitem domenowym
 	\item 09\_sqrt\_domain.cpp - kod równoległy, koncepcja dzielenia, podejście domenowe (dodatkowy kod do pokazania współbieżności bez dzielenia pamięci). Każdy wątek używa liczb \(y\le\sqrt{n}\) do odznaczania własnego podzbioru \(N\) wyznaczanego przez dyrektywę \#pragma omp parallel for
 	\begin{lstlisting}[style=mystyle, caption= Sito funkcyjne z dynamic schedulingiem][language=C]
 	#pragma omp parallel for
-	for (i=2;i<=n;i++){
+	for (i=a;i<=n;i++){
 		for (int j=2;j*j<=i;j++){
 			if (i%j==0) {
 				res[i]=1;
@@ -242,7 +240,7 @@ Jedyną fundamentalną różnicą pomiędzy tym kodem a zwykłym sitem domenowym
 		\item Wszystkie wątki dostaną względnie równy podzbiór zbioru liczb do sprawdzenia o podobnym rozkładzie najniższych dzielników.
 		\item W kodzie tym nie zachodzą wyścigi, ponieważ każdy wątek szuka dzielników innych liczb (i ewentualnie oznacza je jako pierwsze - jest to jedyna modyfikacja współdzielonej zmiennej przez wątek).
 		\item Jedyna synchronizacja zajdzie na końcu pętli for.
-		\item False sharing może zachodzić tylko na stykach podzbiorów zbioru otwartego modyfikowanych przez 2 wątki.
+		\item False sharing może zachodzić tylko na stykach części sita modyfikowanych przez 2 różne wątki, ponieważ pętla for jest wykonana w ramach domyślnego static schedulingu.
 	\end{enumerate}
 	Kod ten się bardzo efektywnie zrównolegla, ale i tak jest wiele wolniejszy od sit z powodu gorszej złożoności obliczeniowej.
 \end {enumerate}
@@ -251,7 +249,8 @@ Jedyną fundamentalną różnicą pomiędzy tym kodem a zwykłym sitem domenowym
 \begin{enumerate}
 	\item Wykonałem 3 eksperymenty z kodem:
 	\begin{enumerate}
-		\item Pierwszym było stworzenie podstawowego sita i rozwiązania pierwisatkowego. Rozwiązanie pierwiastkowe pokazałem od razu w wersji zrównoleglonej, jej konstrukcja ograniczała się bowiem do dodania jednej dyrektywy do kodu sekwencyjnego. Sito erastotenesa sekwencyjne było podstawą do dalszych obliczeń.
+		\item Pierwszym było stworzenie podstawowego sita i rozwiązania pierwiastkowego. Rozwiązanie pierwiastkowe pokazałem od razu w wersji zrównoleglonej, jej konstrukcja ograniczała się bowiem do dodania jednej dyrektywy do kodu sekwencyjnego. Sito erastotenesa sekwencyjne było podstawą do dalszych obliczeń.
+		
 		\item Drugi eksperyment to sprawdzenie, jak w zależności od przydziału zadań i synchronizacji procesy używające sita w ramach koncepcji funkcyjnej będą działały, co będzie je ograniczało i które będzie efektywniejsze - ręcznie napisane, używające prostej heurystyki czy używające dyrektywy z dynamicznym przydziałem procesów do zadań.
 		\item Trzecim, kluczowym eksperymentem było pokazanie, jak uzyskać eleganckie, bardzo szybkie sito w wariancie domenowym wykorzystując dobrodziejstwa Cache L1, jej własności i proste ulepszenie sita pod kątem zwiększenia liczby trafień do pamięci. Porównywałem je ze standardowym sitem domenowym.
 	\end{enumerate}
@@ -294,45 +293,84 @@ Oznaczenia i skróty:
 	\item Avg - liczba przetestowanych liczb w jednostce czasu.
 \end{enumerate}
 \begin{flushleft}
-\begin{landscape}
-	
-	\resizebox{\columnwidth}{!}{%
-	\begin{tabular}{| l | l | l | l | l | l | l | l | l | l | l | l | l | l | l | l | l | l | l | l | l |}
-		name & left & right & T & Elapsed & Ticks & IR & R & FEB & BEB & MB & CB & L1 & L2 & L3 & DRB & DTB & ECPU & Div & Eff & Avg \\ \hline
-		03\_efss & 2.0 & 1.00E+09 & 2.0 & 10.448 & 4.96E+10 & 1.44E+10 & 6.8 & 0.4 & 92.5 & 76.8 & 15.7 & 16.3 & 0.0 & 12.1 & 0.0 & 32.7 & 27.2 & 614.59 & 307.29 & 9.57E+07 \\ \hline
-		03\_efss & 2.0 & 1.00E+09 & 4.0 & 10.094 & 6.11E+10 & 1.62E+10 & 7.4 & 0.3 & 91.9 & 74.7 & 17.2 & 7.8 & 0.0 & 18.8 & 0.0 & 37.5 & 34.8 & 593.76 & 148.44 & 9.91E+07 \\ \hline
-		04\_efhs & 2.0 & 1.00E+09 & 2.0 & 10.026 & 5.85E+10 & 1.22E+10 & 4.4 & 0.8 & 94.7 & 78.2 & 16.5 & 6.2 & 1.2 & 20.3 & 0.0 & 36.4 & 33.3 & 589.76 & 294.88 & 9.97E+07 \\ \hline
-		04\_efhs & 2.0 & 1.00E+09 & 4.0 & 8.666 & 1.14E+11 & 1.43E+10 & 2.9 & 0.9 & 95.8 & 78.0 & 17.8 & 0.0 & 0.3 & 29.4 & 0.0 & 41.8 & 77.8 & 509.76 & 127.44 & 1.15E+08 \\ \hline
-		05\_efds & 2.0 & 1.00E+09 & 2.0 & 7.417 & 6.24E+10 & 1.39E+10 & 5.3 & 0.7 & 93.8 & 76.8 & 17.0 & 19.0 & 0.2 & 9.6 & 0.0 & 35.5 & 48.1 & 436.29 & 218.15 & 1.35E+08 \\ \hline
-		05\_efds & 2.0 & 1.00E+09 & 4.0 & 6.654 & 1.07E+11 & 1.47E+10 & 3.2 & 0.9 & 95.5 & 78.3 & 17.2 & 5.9 & 0.2 & 22.3 & 0.0 & 35.7 & 95.7 & 391.41 & 97.85 & 1.50E+08 \\ \hline
-		07\_ed & 2.0 & 1.00E+09 & 1.0 & 11.037 & 4.68E+10 & 1.91E+10 & 9.2 & 0.9 & 89.7 & 72.9 & 16.7 & 19.8 & 2.6 & 10.0 & 0.0 & 34.7 & 24.2 & 649.24 & 649.24 & 9.06E+07 \\ \hline
-		07\_ed & 2.0 & 1.00E+09 & 2.0 & 9.801 & 8.25E+10 & 1.97E+10 & 5.3 & 0.6 & 93.9 & 73.2 & 20.7 & 8.2 & 0.0 & 0.0 & 22.6 & 36.6 & 48.1 & 576.53 & 288.26 & 1.02E+08 \\ \hline
-		07\_ed & 2.0 & 1.00E+09 & 4.0 & 9.013 & 1.45E+11 & 1.96E+10 & 3.9 & 0.5 & 95.4 & 72.8 & 22.6 & 18.7 & 0.0 & 11.2 & 0.0 & 33.8 & 95.5 & 530.18 & 132.54 & 1.11E+08 \\ \hline
-		08\_esd & 2.0 & 1.00E+09 & 1.0 & 1.498 & 6.33E+09 & 1.79E+10 & 49.2 & 14.4 & 26.2 & 20.4 & 5.8 & 19.5 & 4.7 & 1.7 & 0.0 & 1.8 & 24.2 & 88.12 & 88.12 & 6.68E+08 \\ \hline
-		08\_esd & 2.0 & 1.00E+09 & 2.0 & 0.775 & 6.35E+09 & 1.79E+10 & 49.2 & 12.0 & 29.0 & 20.1 & 8.8 & 18.8 & 1.4 & 1.1 & 0.0 & 1.2 & 47.2 & 45.59 & 22.79 & 1.29E+09 \\ \hline
-		08\_esd & 2.0 & 1.00E+09 & 4.0 & 0.429 & 6.50E+09 & 1.80E+10 & 57.6 & 10.8 & 20.0 & 12.2 & 7.8 & 17.5 & 0.0 & 2.3 & 0.0 & 0.9 & 90.7 & 25.24 & 6.31 & 2.33E+09 \\ \hline
-		07\_ed & 2.0 & 1.00E+07 & 1.0 & 0.053 & 1.88E+08 & 1.80E+08 & 0.0 & 0.0 & 100.0 & 90.5 & 9.5 & 0.0 & 0.0 & 0.0 & 0.0 & 0.0 & 23.6 & 3.12 & 3.12 & 1.89E+08 \\ \hline
-		07\_ed & 2.0 & 1.00E+07 & 2.0 & 0.037 & 2.12E+08 & 1.88E+08 & 0.0 & 0.0 & 100.0 & 100.0 & 0.0 & 0.0 & 0.0 & 0.0 & 0.0 & 0.0 & 41.0 & 2.18 & 1.09 & 2.70E+08 \\ \hline
-		07\_ed & 2.0 & 1.00E+07 & 4.0 & 0.03 & 2.72E+08 & 2.84E+08 & 0.0 & 0.0 & 100.0 & 0.0 & 100.0 & 0.0 & 0.0 & 0.0 & 0.0 & 0.0 & 71.0 & 1.76 & 0.44 & 3.33E+08 \\ \hline
-		08\_esd & 2.0 & 1.00E+07 & 1.0 & 0.021 & 5.20E+07 & 1.60E+08 & 0.0 & 0.0 & 100.0 & 0.0 & 100.0 & 0.0 & 0.0 & 0.0 & 0.0 & 0.0 & 22.9 & 1.24 & 1.24 & 4.76E+08 \\ \hline
-		08\_esd & 2.0 & 1.00E+07 & 2.0 & 0.017 & 6.40E+07 & 1.68E+08 & 0.0 & 0.0 & 100.0 & 0.0 & 100.0 & 0.0 & 0.0 & 0.0 & 0.0 & 0.0 & 34.7 & 1.0 & 0.5 & 5.88E+08 \\ \hline
-		08\_esd & 2.0 & 1.00E+07 & 4.0 & 0.021 & 1.64E+08 & 2.68E+08 & 0.0 & 0.0 & 100.0 & 0.0 & 100.0 & 0.0 & 0.0 & 0.0 & 0.0 & 0.0 & 54.7 & 1.24 & 0.31 & 4.76E+08 \\ \hline
-		09\_sd & 2.0 & 1.00E+07 & 4.0 & 1.291 & 1.98E+10 & 2.16E+10 & 39.0 & 28.1 & 31.6 & 28.1 & 3.5 & 21.4 & 0.0 & 0.0 & 0.0 & 0.1 & 91.2 & 75.94 & 18.99 & 7.75E+06 \\ \hline
-		01\_es & 2.0 & 1.00E+09 & 4.0 & 10.312 & 4.38E+10 & 1.36E+10 & 7.2 & 0.4 & 92.2 & 76.4 & 15.8 & 18.5 & 0.2 & 9.2 & 0.0 & 30.7 & 24.2 & 606.59 & 151.65 & 9.70E+07 \\ \hline
-		
+		\rowcolors{2}{gray!25}{white}
+		\resizebox{\columnwidth}{!}{%
+		\begin{tabular}{| l | l | l | l | l | l | l | l | l | l | l | l | l | l | l | l | l | l | l | l | l |}
+			\rowcolor{gray!50}
+			name & left & right & T & Elapsed & Ticks & IR & R & FEB & BEB & MB & CB & L1 & L2 & L3 & DRB & DTB & ECPU & Div & Eff & Avg \\ \hline
+			01\_es & 2.0 & 1.00E+09 & 1 & 10.312 & 4.38E+10 & 1.36E+10 & 7.2 & 0.4 & 92.2 & 76.4 & 15.8 & 18.5 & 0.2 & 9.2 & 0.0 & 30.7 & 24.2 & 1.0 & 1.0 & 9.70E+07 \\ \hline
+			03\_efss & 2.0 & 1.00E+09 & 2 & 10.448 & 4.96E+10 & 1.44E+10 & 6.8 & 0.4 & 92.5 & 76.8 & 15.7 & 16.3 & 0.0 & 12.1 & 0.0 & 32.7 & 27.2 & 0.99 & 0.49 & 9.57E+07 \\ \hline
+			03\_efss & 2.0 & 1.00E+09 & 4 & 10.094 & 6.11E+10 & 1.62E+10 & 7.4 & 0.3 & 91.9 & 74.7 & 17.2 & 7.8 & 0.0 & 18.8 & 0.0 & 37.5 & 34.8 & 1.02 & 0.26 & 9.91E+07 \\ \hline
+			04\_efhs & 2.0 & 1.00E+09 & 2 & 10.026 & 5.85E+10 & 1.22E+10 & 4.4 & 0.8 & 94.7 & 78.2 & 16.5 & 6.2 & 1.2 & 20.3 & 0.0 & 36.4 & 33.3 & 1.03 & 0.51 & 9.97E+07 \\ \hline
+			04\_efhs & 2.0 & 1.00E+09 & 4 & 8.666 & 1.14E+11 & 1.43E+10 & 2.9 & 0.9 & 95.8 & 78.0 & 17.8 & 0.0 & 0.3 & 29.4 & 0.0 & 41.8 & 77.8 & 1.19 & 0.30 & 1.15E+08 \\ \hline
+			05\_efds & 2.0 & 1.00E+09 & 2 & 7.417 & 6.24E+10 & 1.39E+10 & 5.3 & 0.7 & 93.8 & 76.8 & 17.0 & 19.0 & 0.2 & 9.6 & 0.0 & 35.5 & 48.1 & 1.39 & 0.70 & 1.35E+08 \\ \hline
+			05\_efds & 2.0 & 1.00E+09 & 4 & 6.654 & 1.07E+11 & 1.47E+10 & 3.2 & 0.9 & 95.5 & 78.3 & 17.2 & 5.9 & 0.2 & 22.3 & 0.0 & 35.7 & 95.7 & 1.55 & 0.39 & 1.50E+08 \\ \hline
+			07\_ed & 2.0 & 1.00E+09 & 1 & 11.037 & 4.68E+10 & 1.91E+10 & 9.2 & 0.9 & 89.7 & 72.9 & 16.7 & 19.8 & 2.6 & 10.0 & 0.0 & 34.7 & 24.2 & 0.93 & 0.93 & 9.06E+07 \\ \hline
+			07\_ed & 2.0 & 1.00E+09 & 2 & 9.801 & 8.25E+10 & 1.97E+10 & 5.3 & 0.6 & 93.9 & 73.2 & 20.7 & 8.2 & 0.0 & 0.0 & 22.6 & 36.6 & 48.1 & 1.05 & 0.53 & 1.02E+08 \\ \hline
+			07\_ed & 2.0 & 1.00E+09 & 4 & 9.013 & 1.45E+11 & 1.96E+10 & 3.9 & 0.5 & 95.4 & 72.8 & 22.6 & 18.7 & 0.0 & 11.2 & 0.0 & 33.8 & 95.5 & 1.14 & 0.29 & 1.11E+08 \\ \hline
+			08\_esd & 2.0 & 1.00E+09 & 1 & 1.498 & 6.33E+09 & 1.79E+10 & 49.2 & 14.4 & 26.2 & 20.4 & 5.8 & 19.5 & 4.7 & 1.7 & 0.0 & 1.8 & 24.2 & 6.88 & 6.88 & 6.68E+08 \\ \hline
+			08\_esd & 2.0 & 1.00E+09 & 2 & 0.775 & 6.35E+09 & 1.79E+10 & 49.2 & 12.0 & 29.0 & 20.1 & 8.8 & 18.8 & 1.4 & 1.1 & 0.0 & 1.2 & 47.2 & 13.31 & 6.65 & 1.29E+09 \\ \hline
+			08\_esd & 2.0 & 1.00E+09 & 4 & 0.429 & 6.50E+09 & 1.80E+10 & 57.6 & 10.8 & 20.0 & 12.2 & 7.8 & 17.5 & 0.0 & 2.3 & 0.0 & 0.9 & 90.7 & 24.04 & 6.01 & 2.33E+09 \\ \hline
+			09\_sd & 2.0 & 1.00E+07 & 1 & 3.84 & 1.60E+10 & 1.76E+10 & 46.4 & 41.5 & 11.6 & 8.4 & 3.2 & 26.3 & 0.0 & 0.0 & 0.0 & 0.0 & 24.9 & 2.69 & 2.69 & 2.60E+06 \\ \hline
+			09\_sd & 2.0 & 1.00E+07 & 4 & 1.291 & 1.98E+10 & 2.16E+10 & 39.0 & 28.1 & 31.6 & 28.1 & 3.5 & 21.4 & 0.0 & 0.0 & 0.0 & 0.1 & 91.2 & 7.99 & 2.00 & 7.75E+06 \\ \hline
 	\end{tabular}
 }
-\end{landscape}
 \end{flushleft}
+
+\begin{figure}[h!]
+	\centering
+	\begin{subfigure}[b]{0.32\linewidth}
+		\includegraphics[width=\linewidth]{PR/03_04.png}
+	\end{subfigure}
+	\begin{subfigure}[b]{0.32\linewidth}
+		\includegraphics[width=\linewidth]{PR/04_04.png}
+	\end{subfigure}
+	\begin{subfigure}[b]{0.32\linewidth}
+		\includegraphics[width=\linewidth]{PR/05_04.png}
+	\end{subfigure}
+	\caption{Zużycie CPU dla sit funkcyjnych, dla 4 wątków; kolejne kody: 03, 04, 05}
+\end{figure}
+\begin{figure}[h!]
+	\begin{subfigure}[b]{0.32\linewidth}
+		\includegraphics[width=\linewidth]{PR/07_01.png}
+	\end{subfigure}
+	\begin{subfigure}[b]{0.32\linewidth}
+		\includegraphics[width=\linewidth]{PR/07_02.png}
+	\end{subfigure}
+	\begin{subfigure}[b]{0.32\linewidth}
+		\includegraphics[width=\linewidth]{PR/07_04.png}
+	\end{subfigure}
+	\caption{Zużycie CPU dla kodu 07 używającego kolejno: 1, 2, 4 wątków}
+\end{figure}
+\begin{figure}[h!]
+	\begin{subfigure}[b]{0.32\linewidth}
+		\includegraphics[width=\linewidth]{PR/08_01.png}
+	\end{subfigure}
+	\begin{subfigure}[b]{0.32\linewidth}
+		\includegraphics[width=\linewidth]{PR/08_02.png}
+	\end{subfigure}
+	\begin{subfigure}[b]{0.32\linewidth}
+		\includegraphics[width=\linewidth]{PR/08_04.png}
+	\end{subfigure}
+	\caption{Zużycie CPU dla kodu 08 używającego kolejno: 1, 2, 4 wątków}
+\end{figure}
 
 \section{Wnioski}
 \begin{enumerate}
 	\item Rozwiązanie oparte na wyznaczaniu dzielników mniejszych równych od \(\sqrt{n}\) bardzo efektywnie się zrównolegla - procesy dzielą się pracą bardzo równo, przez większość czasu działania programu wykonuje się 7-8 wątków. Zwiększenie liczby procesów \(k\)-krotnie powoduje zmniejszenie czasu przetwarzania prawie \(k\)-krotnie, przy założeniu, że nowy wątek jest wykonywany przez inny procesor logiczny. Nie zachodzi prawie wcale False Sharing, ponieważ jedyna współdzielona zmienna to tablica liczb pierwszych. Wątki nie czytają współdzielonej pamięci, co powoduje, że praktycznie nie zachodzą cache missy. Wąskim gardłem rozwiązania jest Front-End Bound - co oznacza, że są większe problemy z dostarczeniem zadania do wykonania do Back-endu niż z jego wykonaniem; a także intensywne dzielenie, zwiększające Core-Bound. Algorytm pomimo zrównoleglenia nadal jest wolniejszy od sekwencyjnego sita, ponieważ ma większą złożoność - dla \(n=10^9\) ponad 1000-krotnie wolniejszy.
-	\item Sito erastotenesa w podejściu funkcyjnym było w stanie uzyskać prawie 2-krotne przyspieszenie względem sekwencyjnego sita używając dynamic schedulingu. Co ciekawe, rozwiązania używające handmade schedulingu jest około 1.5 razy wolniejsze od rozwiązania używającego static schedulingu, pomimo tego, że ma prawie dwukrotnie wyższy współczynnik "effective physcial core utilization" - powodem jest to, że bardzo często zachodzi
 	
-	\item Jakie podejście równoległe jest najbardziej efektywne, czy efektywność skaluje się ze wzrostem liczby procesorów (jest stała, w
-	jaki sposób się zmienia), jak wygląda przegląd efektywności użytych podejść. Jakie są przyczyny tych wyników.
-	\item Najbardziej efektowne jest ulepszone sito domenowe - zrównolegla się bez żadnego problemu (dla \(k\) wątków i \(t_{sequential} =\) czas dla 1 wątku, czas przetwarzania to \(\frac{t_{sequential}}{k}\)), a czas przetwarzania na 1 wątku jest 8 razy krótszy niż czas przetwarzania standardowego sita. Wynika to z zapewnienia tego, że większość operacji w pamięci zaliczy trafienie już na etapie L1 cache - nie wynika to z pojedynczej linii, ale z konstrukcji algorytmu i iterowania się w batchach co 32000 intów, czyli 128.000 bajtów, które mogą się zmieścić w L1 cache. Ponadto sam algorytm nie generuje dużo większego narzutu niż zwykłe sito, chociaż złożoność ma uzależnioną od liczby, o którą się przesuwam - jeśli mogę ją oszacować przez \(O(\sqrt{n})\) dla \(n\)- rozmiaru sita, to sito wykona co najwyżej \(O(\sqrt{n})*O(\sqrt{n})=O(n)\) "pustych przelotów" - iteracji, w trakcie których nie przejdę do skreślania liczb pierwszych (ponieważ liczba liczb pierwszych \(p\le\sqrt{n}\) jest ograniczona przez \(\sqrt{n}\), a liczba iteracji przez odwrotność przesunięcie sita - czyli \(O(\sqrt{n})\). To ogranicza złożoność algorytmu do złożoności standardowego sita. Procesy nadal dzielą między sobą po równo liczbę elementów części otwartej sita, co za tym idzie algorytm jest najlepszy zarówno w kontekście zrównoleglania, jak i efektywności.
+	\item Sito erastotenesa w podejściu funkcyjnym było w stanie uzyskać około \(\frac{2}{3}\) czasu działania sita sekwencyjnego sita używając dynamic schedulingu. Co ciekawe, rozwiązania używające handmade schedulingu jest około \(\frac{1}{9}\) razy wolniejsze od rozwiązania używającego dynamic schedulingu (dla 4 rdzeni), co jest skorelowane z współczynnikiem "effective physcial core utilization" - wynika stąd, że sito używające dynamic schedulingu pomimo narzutu związanego z synchronizacją nadal jest szybsze od ręcznego przydziału liczb do procesów. Wskazuje to na niedoskonałość heurystyki, której używałem - nie uwzględniłem cache procesora - procesy, które będą skreślać niskie liczby, częściej będą zaliczały trafienie w lokalnym cache. Obserwacja ta zostanie wykorzystana do konstrukcji kodu 08. Zgodnie z oczekiwaniami, kod używający statycznego przydziału iteracji do procesu ma bardzo niski współczynnik efektywnego użycia cpu. Co ciekawe, kod ten ma też mniejszy o 2 punkty procentowe Memory Bound niż 2 pozostałe sita w podejściu funkcyjnym - wynika to z mniejszej ilości cache missów, jako że tylko jeden wątek ma dla siebie całe cache przez większość czasu trwania programu.
+	
+	
+	\item Efektywność standardowego sita domenowego pozostawia wiele do życzenia - jest ono około \(\frac{2}{7}\) razy wolniejsze od sita funkcyjnego z dynamic schedulingiem dla tej samej liczby wątków; problem wydajnościowy zapewne tkwi w zarządzaniu pamięcią; z zebranych danych wynika, że ten algorytm jako jedyny blokował się częściej niż 0.1\% razy na przedziale alokacji, mając znaleziony segment pamięci w DRAMie. Algorytm ponadto miał większy narzut związany z core boundem - najprawdopodobniej wynika to z intensywnego używania slotów procesora. Z danych można wyciągnąć wniosek, że algorytm użytkował wszystke procesory w miarę równomiernie, jednak zwiększenie liczby procesorów nie powoduje zmniejszenia czasu przetwarzania o więcej niż \(\frac{1}{12}\). Wszystkie te dane i natura algorytmu skłaniają do sformułowania wniosku: kod sita domenowego jest wolny w porównaniu do funkcyjnych, ponieważ procesy zapełniają globalny cache własnymi częściami sita, a jako że każdy wątek ma inny segment, te części pamięci się nie pokrywają, często zachodzą Cache Missy, co spowalnia algorytm mimo nieomal pełnego wykorzystania procesorów. Problem ten nie zachodzi w takim wymiarze dla sita funkcyjnego, ponieważ segmenty pamięci mogą się pokrywać, co za tym idzie częściej zajdzie cache hit, a false sharing nie jest dużym narzutem na efektywności powyższych kodów. Aby sprawdzić zasadność tej tezy, stworzony został kod super-sita domenowego z przesuwaniem o liczbę niższą niż ilość danych, która zmieści się w L1 cache jednego rdzenia procesora - kod ten powinien być znacznie szybszy i efektywnie zmniejszać czas trwania przetwarzania.
+	
+	
+	\item Najbardziej efektowne jest ulepszone sito domenowe - zrównolegla się bez żadnego problemu (dla \(k\) wątków i \(t_{sequential} =\) czas dla 1 wątku, czas przetwarzania to \(\frac{t_{sequential}}{k}\)), a czas przetwarzania na 1 wątku jest 8 razy krótszy niż czas przetwarzania standardowego sita. Wynika to z zapewnienia tego, że większość operacji w pamięci zaliczy trafienie już na etapie L1 cache - nie wynika to z pojedynczej linii, ale z konstrukcji algorytmu i iterowania się w batchach co 32000 intów, czyli 128.000 bajtów, które mogą się zmieścić w L1 cache. Ponadto sam algorytm nie generuje dużo większego narzutu niż zwykłe sito, chociaż złożoność ma uzależnioną od liczby, o którą się przesuwam - jeśli mogę ją oszacować przez co najmniej \(O(\sqrt{n})\) dla \(n\)- rozmiaru sita, to sito wykona co najwyżej \(O(\sqrt{n})*O(\sqrt{n})=O(n)\) "pustych przelotów" - iteracji, w trakcie których nie przejdę do skreślania liczb pierwszych (ponieważ liczba liczb pierwszych \(p\le\sqrt{n}\) jest ograniczona przez \(\sqrt{n}\), a liczba iteracji przez odwrotność przesunięcie sita pomnożoną przez rozmiar sita - czyli \(O(\sqrt{n})\). To ogranicza złożoność algorytmu do złożoności standardowego sita. Procesy nadal dzielą między sobą po równo liczbę elementów części otwartej sita, co za tym idzie algorytm jest najlepszy zarówno w kontekście zrównoleglania, jak i efektywności.
+	
+	\item {O ile w rozwiązaniu 08 nie }
 \end{enumerate}
+
+\section{Podsumowanie}
+	Celem tego projektu było przedstawienie efektywnego algorytmu równoległego do znajdywania liczb pierwszych w przedziale. Cel ten został zrealizowany w kodzie 08, pozostałe pokazywały pewne własności przetwarzania równoległego, które naprowadzały na sposób realizacji tego celu.
 
 \end{document}
