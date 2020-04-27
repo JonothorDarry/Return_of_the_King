@@ -1,19 +1,17 @@
 #include "utils.cpp"
 
 int squarez[20][D], ij[20];
-void better_par_erasto_sieve(bool *res, int n, int thr){
+void erasto_func_handschedule(bool *res, int a, int n, int thr){
 	int proc, i, j, jj, sq=0;
 	double summa=0, part;
 	sq=floor(sqrt(n));
-	//omp_set_num_threads(4);
 	
-	if (n>4) better_par_erasto_sieve(res, sq, thr);
+	if (n>4) erasto_func_handschedule(res, 2, sq, thr);
 	else{
 		if (n>=4) res[0]=res[1]=res[4]=1;
 		else res[0]=res[1]=1;
 		return;
 	}
-	omp_set_num_threads(thr);
 
 	//Sumaric amount of work for each process, so that they'll be approximately equal
 	proc=omp_get_max_threads();
@@ -56,8 +54,8 @@ void better_par_erasto_sieve(bool *res, int n, int thr){
 			i=squarez[jj][ite];
 			sv=sq+1;
 			j=sv-sv%i+((sv%i==0)?0:i);
-			for (j=min(i*i, j); j<=n; j+=i) res[j]=1;
-			for (j=i*i; j<=n; j+=i) res[j]=1;
+			j=max(modal(sv, i), modal(a, i));
+			for (j=max(i*i, j); j<=n; j+=i) res[j]=1;
 		}
 		//printf ("%d %d %d %d %.6lf %d\n", n, omp_get_thread_num(), jj, ij[jj], t2-t1, cloock);
 	}
@@ -65,5 +63,5 @@ void better_par_erasto_sieve(bool *res, int n, int thr){
 
 
 int main(int argc, char *argv[]){
-	base(argc, argv, &better_par_erasto_sieve, "T03_better_par_erasto_sieve.txt");
+	base(argc, argv, &erasto_func_handschedule, "T03_better_par_erasto_sieve.txt");
 return 0;}

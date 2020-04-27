@@ -1,10 +1,10 @@
 #include "utils.cpp"
 
-void primitive_finder(bool *res, int n, int thr){
+void primitive_finder(bool *res, int a, int n, int thr){
 	int i;
 	omp_set_num_threads(thr);
 #pragma omp parallel for
-	for (i=2;i<=n;i++){
+	for (i=a;i<=n;i++){
 		for (int j=2;j*j<=i;j++){
 			if (i%j==0) {
 				res[i]=1;
