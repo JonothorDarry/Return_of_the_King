@@ -187,7 +187,7 @@
 	\begin{enumerate}
 		\item Dyrektywa tworzy wątki, które podzielą się nieomal równomiernie pracą - ponieważ każdy wątek musi użyć każdej liczby pierwszej z części domkniętej sita do oznaczenia przedziału z części otwartej sita o wielkości (prawie) równej dla każdego wątku.
 		\item False sharing zachodzi w szczególnym przypadku, gdy sprawdzam pod kątem pierwszości liczbę \(x\) - albo ją odnaczam jako złożoną, razem z nią ściągając do cache liczbę \(y\) w części otwartej używanej przez inny wątek, która może się zmieniać, ponieważ \(|x-y|<64\) (64 bajty to rozmiar linii pamięci, a rozmiar typu bool na systemie, na którym zaszło testowanie to 1 bajt). Może on jednak zajść nie więcej niż \((4+1)*64*log_2(n)\) razy, bo \(\sqrt[log_2(n)]{n}\le log_2(n)\), a liczba wątków to co najwyżej \(4\), dodatkowe \(+1\) wynika z wątku używającego podciągu obok tablicy z części domkniętej sita - jest to liczba o kilka rzędów wielkości mniejsza niż \(n\), zatem (co pokaże później VTune profiler) false sharing nie będzie prawie wcale wpływał na czas przetwarzania.
-		\item Wątki będą modyfikowały współdzielone L2 i L3 cache - co za tym idzie, często będą zachodziły cache-missy, ponieważ L2 i L3 cache będą często zmieniały dane - w praktyce każdy wątek będzie modyfikował zupełnie inne części tablicy, które będą stale się zmieniać (inaczej niż np. w przypadku, w którym 1 wątek modyfikuje co 2. element tablicy), a nie zmieszczą się one w L1 cache (mogącej pomieścić 32KB danych).
+		\item Wątki będą modyfikowały współdzielone L2 i L3 cache - co za tym idzie, często będą zachodziły cache-missy, ponieważ L2 i L3 cache będą często zmieniały dane - w praktyce każdy wątek będzie modyfikował zupełnie inne części tablicy, które będą stale się zmieniać (inaczej niż np. w przypadku, w którym 1 wątek modyfikuje co 2. element tablicy), a nie zmieszczą się one w L1 cache (mogącej pomieścić 128KB danych nie będących instrukcjami).
 	\end{enumerate}
 
 	\item 08\_erasto\_super\_domain.cpp - usunięty został problem częstych cache missów przez to, że wątek aktualizuje w 1 pętli co najwyżej 32000 kolejne elementy sita plus kilka dodatkowych; W moim algorytmie utrzymuję tablicę liczb pierwszych modyfikowaną przed stworzeniem wątków wartościami \(x\le \sqrt{n}\); Każdy wątek aktualizuje kolejne liczby pierwsze od poprzedniej oznaczonej albo startowej, dopóki nie przekroczy \(left+32000\) albo prawej granicy podzbioru, który wolno mi modyfikować. (\(left\) to początek iteracji), wtedy jest to jego ostatnia iteracja w tym batchu; przechodzę do kolejnej liczby powtarzając proces; w końcu, po przejściu całej tablicy liczb pierwszych, wracam do 1. liczby pierwszej i aktualizuje \(left+=32000\). Powtarzam proces dopóki każda liczba pierwsza nie przekroczy prawej granicy zadanego ciągu.
@@ -298,26 +298,28 @@ Oznaczenia i skróty:
 	
 	\resizebox{\columnwidth}{!}{%
 	\begin{tabular}{| l | l | l | l | l | l | l | l | l | l | l | l | l | l | l | l | l | l | l | l | l |}
-		\hline
 		name & left & right & T & Elapsed & Ticks & IR & R & FEB & BEB & MB & CB & L1 & L2 & L3 & DRB & DTB & ECPU & Div & Eff & Avg \\ \hline
-		03\_efss & 2.0 & 1.00E+09 & 4.0 & 10.199 & 6.08E+10 & 1.60E+10 & 6.8 & 0.4 & 92.4 & 75.5 & 16.9 & 9.7 & 0.3 & 17.5 & 0.0 & 36.3 & 34.3 & 728.5 & 182.12 & 9.80E+07 \\ \hline
-		04\_efhs & 2.0 & 1.00E+09 & 4.0 & 8.802 & 1.20E+11 & 1.43E+10 & 2.8 & 0.9 & 96.1 & 78.7 & 17.4 & 0.0 & 0.0 & 35.5 & 0.0 & 43.2 & 80.5 & 628.71 & 157.18 & 1.14E+08 \\ \hline
-		05\_efds & 2.0 & 1.00E+09 & 4.0 & 6.417 & 1.03E+11 & 1.47E+10 & 3.3 & 0.9 & 95.5 & 78.5 & 17.0 & 2.7 & 0.0 & 25.5 & 0.0 & 40.8 & 96.0 & 458.36 & 114.59 & 1.56E+08 \\ \hline
-		08\_esd & 2.0 & 1.00E+09 & 4.0 & 0.419 & 6.47E+09 & 1.81E+10 & 47.2 & 9.1 & 33.1 & 19.5 & 13.6 & 14.6 & 0.4 & 1.1 & 0.0 & 0.7 & 92.5 & 29.93 & 7.48 & 2.39E+09 \\ \hline
-		07\_ed & 2.0 & 1.00E+09 & 4.0 & 9.204 & 1.47E+11 & 2.11E+10 & 3.9 & 0.6 & 95.3 & 73.3 & 22.1 & 6.5 & 0.0 & 24.5 & 0.0 & 35.6 & 94.8 & 657.43 & 164.36 & 1.09E+08 \\ \hline
-		08\_esd & 2.0 & 1.00E+09 & 1.0 & 1.494 & 6.30E+09 & 1.79E+10 & 49.8 & 14.8 & 25.1 & 21.5 & 3.6 & 26.4 & 2.0 & 1.4 & 0.0 & 1.7 & 24.2 & 106.71 & 106.71 & 6.69E+08 \\ \hline
-		08\_esd & 2.0 & 1.00E+09 & 2.0 & 0.769 & 6.33E+09 & 1.79E+10 & 49.4 & 12.0 & 28.8 & 20.2 & 8.7 & 19.5 & 0.9 & 1.1 & 0.0 & 1.2 & 47.4 & 54.93 & 27.46 & 1.30E+09 \\ \hline
-		08\_esd & 2.0 & 1.00E+09 & 4.0 & 0.412 & 6.35E+09 & 1.79E+10 & 51.7 & 9.7 & 28.1 & 17.0 & 11.1 & 15.4 & 0.7 & 0.0 & 0.7 & 0.7 & 92.4 & 29.43 & 7.36 & 2.43E+09 \\ \hline
-		07\_ed & 2.0 & 1.00E+09 & 1.0 & 11.113 & 4.72E+10 & 1.91E+10 & 8.9 & 0.8 & 90.1 & 72.5 & 17.6 & 21.2 & 0.9 & 0.0 & 9.9 & 33.3 & 24.2 & 793.79 & 793.79 & 9.00E+07 \\ \hline
-		07\_ed & 2.0 & 1.00E+09 & 2.0 & 9.315 & 7.88E+10 & 1.92E+10 & 5.8 & 0.4 & 93.5 & 73.4 & 20.1 & 22.4 & 0.3 & 7.6 & 0.0 & 33.0 & 48.4 & 665.36 & 332.68 & 1.07E+08 \\ \hline
-		07\_ed & 2.0 & 1.00E+09 & 4.0 & 9.266 & 1.48E+11 & 2.11E+10 & 4.1 & 0.7 & 95.0 & 72.7 & 22.3 & 7.6 & 0.0 & 23.4 & 0.0 & 34.6 & 94.8 & 661.86 & 165.46 & 1.08E+08 \\ \hline
-		08\_esd & 2.0 & 1.00E+07 & 1.0 & 0.019 & 4.80E+07 & 1.60E+08 & 0.0 & 20.8 & 79.2 & 79.2 & 0.0 & 41.7 & 0.0 & 0.0 & 0.0 & 0.0 & 23.2 & 1.36 & 1.36 & 5.26E+08 \\ \hline
-		08\_esd & 2.0 & 1.00E+07 & 2.0 & 0.014 & 5.60E+07 & 1.64E+08 & 0.0 & 0.0 & 100.0 & 0.0 & 100.0 & 0.0 & 0.0 & 0.0 & 0.0 & 0.0 & 34.9 & 1.0 & 0.5 & 7.14E+08 \\ \hline
-		08\_esd & 2.0 & 1.00E+07 & 4.0 & 0.014 & 6.40E+07 & 1.68E+08 & 0.0 & 0.0 & 100.0 & 0.0 & 100.0 & 0.0 & 0.0 & 0.0 & 0.0 & 0.0 & 53.0 & 1.0 & 0.25 & 7.14E+08 \\ \hline
-		07\_ed & 2.0 & 1.00E+07 & 1.0 & 0.053 & 1.72E+08 & 1.80E+08 & 0.0 & 0.0 & 100.0 & 92.9 & 7.1 & 0.0 & 0.0 & 0.0 & 0.0 & 0.0 & 23.7 & 3.79 & 3.79 & 1.89E+08 \\ \hline
-		07\_ed & 2.0 & 1.00E+07 & 2.0 & 0.037 & 2.16E+08 & 2.00E+08 & 0.0 & 0.0 & 100.0 & 100.0 & 0.0 & 0.0 & 0.0 & 0.0 & 0.0 & 0.0 & 41.6 & 2.64 & 1.32 & 2.70E+08 \\ \hline
-		07\_ed & 2.0 & 1.00E+07 & 4.0 & 0.025 & 2.52E+08 & 2.08E+08 & 0.0 & 0.0 & 100.0 & 0.0 & 100.0 & 0.0 & 0.0 & 0.0 & 0.0 & 0.0 & 75.1 & 1.79 & 0.45 & 4.00E+08 \\ \hline
-		01\_es & 2.0 & 1.00E+09 & 1.0 & 10.429 & 4.43E+10 & 1.36E+10 & 7.1 & 0.5 & 92.2 & 77.0 & 15.3 & 18.2 & 1.5 & 1.1 & 7.9 & 32.1 & 24.2 & 744.93 & 744.93 & 9.59E+07 \\ \hline
+		03\_efss & 2.0 & 1.00E+09 & 2.0 & 10.448 & 4.96E+10 & 1.44E+10 & 6.8 & 0.4 & 92.5 & 76.8 & 15.7 & 16.3 & 0.0 & 12.1 & 0.0 & 32.7 & 27.2 & 614.59 & 307.29 & 9.57E+07 \\ \hline
+		03\_efss & 2.0 & 1.00E+09 & 4.0 & 10.094 & 6.11E+10 & 1.62E+10 & 7.4 & 0.3 & 91.9 & 74.7 & 17.2 & 7.8 & 0.0 & 18.8 & 0.0 & 37.5 & 34.8 & 593.76 & 148.44 & 9.91E+07 \\ \hline
+		04\_efhs & 2.0 & 1.00E+09 & 2.0 & 10.026 & 5.85E+10 & 1.22E+10 & 4.4 & 0.8 & 94.7 & 78.2 & 16.5 & 6.2 & 1.2 & 20.3 & 0.0 & 36.4 & 33.3 & 589.76 & 294.88 & 9.97E+07 \\ \hline
+		04\_efhs & 2.0 & 1.00E+09 & 4.0 & 8.666 & 1.14E+11 & 1.43E+10 & 2.9 & 0.9 & 95.8 & 78.0 & 17.8 & 0.0 & 0.3 & 29.4 & 0.0 & 41.8 & 77.8 & 509.76 & 127.44 & 1.15E+08 \\ \hline
+		05\_efds & 2.0 & 1.00E+09 & 2.0 & 7.417 & 6.24E+10 & 1.39E+10 & 5.3 & 0.7 & 93.8 & 76.8 & 17.0 & 19.0 & 0.2 & 9.6 & 0.0 & 35.5 & 48.1 & 436.29 & 218.15 & 1.35E+08 \\ \hline
+		05\_efds & 2.0 & 1.00E+09 & 4.0 & 6.654 & 1.07E+11 & 1.47E+10 & 3.2 & 0.9 & 95.5 & 78.3 & 17.2 & 5.9 & 0.2 & 22.3 & 0.0 & 35.7 & 95.7 & 391.41 & 97.85 & 1.50E+08 \\ \hline
+		07\_ed & 2.0 & 1.00E+09 & 1.0 & 11.037 & 4.68E+10 & 1.91E+10 & 9.2 & 0.9 & 89.7 & 72.9 & 16.7 & 19.8 & 2.6 & 10.0 & 0.0 & 34.7 & 24.2 & 649.24 & 649.24 & 9.06E+07 \\ \hline
+		07\_ed & 2.0 & 1.00E+09 & 2.0 & 9.801 & 8.25E+10 & 1.97E+10 & 5.3 & 0.6 & 93.9 & 73.2 & 20.7 & 8.2 & 0.0 & 0.0 & 22.6 & 36.6 & 48.1 & 576.53 & 288.26 & 1.02E+08 \\ \hline
+		07\_ed & 2.0 & 1.00E+09 & 4.0 & 9.013 & 1.45E+11 & 1.96E+10 & 3.9 & 0.5 & 95.4 & 72.8 & 22.6 & 18.7 & 0.0 & 11.2 & 0.0 & 33.8 & 95.5 & 530.18 & 132.54 & 1.11E+08 \\ \hline
+		08\_esd & 2.0 & 1.00E+09 & 1.0 & 1.498 & 6.33E+09 & 1.79E+10 & 49.2 & 14.4 & 26.2 & 20.4 & 5.8 & 19.5 & 4.7 & 1.7 & 0.0 & 1.8 & 24.2 & 88.12 & 88.12 & 6.68E+08 \\ \hline
+		08\_esd & 2.0 & 1.00E+09 & 2.0 & 0.775 & 6.35E+09 & 1.79E+10 & 49.2 & 12.0 & 29.0 & 20.1 & 8.8 & 18.8 & 1.4 & 1.1 & 0.0 & 1.2 & 47.2 & 45.59 & 22.79 & 1.29E+09 \\ \hline
+		08\_esd & 2.0 & 1.00E+09 & 4.0 & 0.429 & 6.50E+09 & 1.80E+10 & 57.6 & 10.8 & 20.0 & 12.2 & 7.8 & 17.5 & 0.0 & 2.3 & 0.0 & 0.9 & 90.7 & 25.24 & 6.31 & 2.33E+09 \\ \hline
+		07\_ed & 2.0 & 1.00E+07 & 1.0 & 0.053 & 1.88E+08 & 1.80E+08 & 0.0 & 0.0 & 100.0 & 90.5 & 9.5 & 0.0 & 0.0 & 0.0 & 0.0 & 0.0 & 23.6 & 3.12 & 3.12 & 1.89E+08 \\ \hline
+		07\_ed & 2.0 & 1.00E+07 & 2.0 & 0.037 & 2.12E+08 & 1.88E+08 & 0.0 & 0.0 & 100.0 & 100.0 & 0.0 & 0.0 & 0.0 & 0.0 & 0.0 & 0.0 & 41.0 & 2.18 & 1.09 & 2.70E+08 \\ \hline
+		07\_ed & 2.0 & 1.00E+07 & 4.0 & 0.03 & 2.72E+08 & 2.84E+08 & 0.0 & 0.0 & 100.0 & 0.0 & 100.0 & 0.0 & 0.0 & 0.0 & 0.0 & 0.0 & 71.0 & 1.76 & 0.44 & 3.33E+08 \\ \hline
+		08\_esd & 2.0 & 1.00E+07 & 1.0 & 0.021 & 5.20E+07 & 1.60E+08 & 0.0 & 0.0 & 100.0 & 0.0 & 100.0 & 0.0 & 0.0 & 0.0 & 0.0 & 0.0 & 22.9 & 1.24 & 1.24 & 4.76E+08 \\ \hline
+		08\_esd & 2.0 & 1.00E+07 & 2.0 & 0.017 & 6.40E+07 & 1.68E+08 & 0.0 & 0.0 & 100.0 & 0.0 & 100.0 & 0.0 & 0.0 & 0.0 & 0.0 & 0.0 & 34.7 & 1.0 & 0.5 & 5.88E+08 \\ \hline
+		08\_esd & 2.0 & 1.00E+07 & 4.0 & 0.021 & 1.64E+08 & 2.68E+08 & 0.0 & 0.0 & 100.0 & 0.0 & 100.0 & 0.0 & 0.0 & 0.0 & 0.0 & 0.0 & 54.7 & 1.24 & 0.31 & 4.76E+08 \\ \hline
+		09\_sd & 2.0 & 1.00E+07 & 4.0 & 1.291 & 1.98E+10 & 2.16E+10 & 39.0 & 28.1 & 31.6 & 28.1 & 3.5 & 21.4 & 0.0 & 0.0 & 0.0 & 0.1 & 91.2 & 75.94 & 18.99 & 7.75E+06 \\ \hline
+		01\_es & 2.0 & 1.00E+09 & 4.0 & 10.312 & 4.38E+10 & 1.36E+10 & 7.2 & 0.4 & 92.2 & 76.4 & 15.8 & 18.5 & 0.2 & 9.2 & 0.0 & 30.7 & 24.2 & 606.59 & 151.65 & 9.70E+07 \\ \hline
+		
 	\end{tabular}
 }
 \end{landscape}
@@ -325,10 +327,12 @@ Oznaczenia i skróty:
 
 \section{Wnioski}
 \begin{enumerate}
-	\item Rozwiązanie oparte na wyznaczaniu dzielników mniejszych równych od \(\sqrt{n}\) bardzo efektywnie się zrównolegla - procesy dzielą się pracą bardzo równo, przez większość czasu działania programu wykonuje się 7-8 wątków. Zwiększenie liczby procesów \(k\)-krotnie powoduje zmniejszenie czasu przetwarzania prawie \(k\)-krotnie, przy założeniu, że nowy wątek jest wykonywany przez inny procesor logiczny. Nie zachodzi prawie wcale False Sharing, ponieważ jedyna współdzielona zmienna to tablica liczb pierwszych. Wątki nie czytają współdzielonej pamięci, co powoduje, że praktycznie nie zachodzą cache missy. Wąskim gardłem rozwiązania jest Front-End Bound - co oznacza, że są większe problemy z dostarczeniem zadania do wykonania do Back-endu niż z jego wykonaniem; a także intensywne dzielenie, zwiększające Core-Bound. Algorytm pomimo zrównoleglenia nadal jest wolniejszy od sita, ponieważ ma większą złożoność - dla \(n=10^9\) ponad 1000-krotnie wolniejszy.
+	\item Rozwiązanie oparte na wyznaczaniu dzielników mniejszych równych od \(\sqrt{n}\) bardzo efektywnie się zrównolegla - procesy dzielą się pracą bardzo równo, przez większość czasu działania programu wykonuje się 7-8 wątków. Zwiększenie liczby procesów \(k\)-krotnie powoduje zmniejszenie czasu przetwarzania prawie \(k\)-krotnie, przy założeniu, że nowy wątek jest wykonywany przez inny procesor logiczny. Nie zachodzi prawie wcale False Sharing, ponieważ jedyna współdzielona zmienna to tablica liczb pierwszych. Wątki nie czytają współdzielonej pamięci, co powoduje, że praktycznie nie zachodzą cache missy. Wąskim gardłem rozwiązania jest Front-End Bound - co oznacza, że są większe problemy z dostarczeniem zadania do wykonania do Back-endu niż z jego wykonaniem; a także intensywne dzielenie, zwiększające Core-Bound. Algorytm pomimo zrównoleglenia nadal jest wolniejszy od sekwencyjnego sita, ponieważ ma większą złożoność - dla \(n=10^9\) ponad 1000-krotnie wolniejszy.
 	\item Sito erastotenesa w podejściu funkcyjnym było w stanie uzyskać prawie 2-krotne przyspieszenie względem sekwencyjnego sita używając dynamic schedulingu. Co ciekawe, rozwiązania używające handmade schedulingu jest około 1.5 razy wolniejsze od rozwiązania używającego static schedulingu, pomimo tego, że ma prawie dwukrotnie wyższy współczynnik "effective physcial core utilization" - powodem jest to, że bardzo często zachodzi
 	
-	\item W podejściu 
+	\item Jakie podejście równoległe jest najbardziej efektywne, czy efektywność skaluje się ze wzrostem liczby procesorów (jest stała, w
+	jaki sposób się zmienia), jak wygląda przegląd efektywności użytych podejść. Jakie są przyczyny tych wyników.
+	\item Najbardziej efektowne jest ulepszone sito domenowe - zrównolegla się bez żadnego problemu (dla \(k\) wątków i \(t_{sequential} =\) czas dla 1 wątku, czas przetwarzania to \(\frac{t_{sequential}}{k}\)), a czas przetwarzania na 1 wątku jest 8 razy krótszy niż czas przetwarzania standardowego sita. Wynika to z zapewnienia tego, że większość operacji w pamięci zaliczy trafienie już na etapie L1 cache - nie wynika to z pojedynczej linii, ale z konstrukcji algorytmu i iterowania się w batchach co 32000 intów, czyli 128.000 bajtów, które mogą się zmieścić w L1 cache. Ponadto sam algorytm nie generuje dużo większego narzutu niż zwykłe sito, chociaż złożoność ma uzależnioną od liczby, o którą się przesuwam - jeśli mogę ją oszacować przez \(O(\sqrt{n})\) dla \(n\)- rozmiaru sita, to sito wykona co najwyżej \(O(\sqrt{n})*O(\sqrt{n})=O(n)\) "pustych przelotów" - iteracji, w trakcie których nie przejdę do skreślania liczb pierwszych (ponieważ liczba liczb pierwszych \(p\le\sqrt{n}\) jest ograniczona przez \(\sqrt{n}\), a liczba iteracji przez odwrotność przesunięcie sita - czyli \(O(\sqrt{n})\). To ogranicza złożoność algorytmu do złożoności standardowego sita. Procesy nadal dzielą między sobą po równo liczbę elementów części otwartej sita, co za tym idzie algorytm jest najlepszy zarówno w kontekście zrównoleglania, jak i efektywności.
 \end{enumerate}
 
 \end{document}
